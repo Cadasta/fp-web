@@ -225,41 +225,16 @@ L.PageComposer = L.Class.extend({
 
     //adds +/-
     _createPageModifiers: function() {
-      // row
-      this._rowModifier = L.DomUtil.create("div", "leaflet-areaselect-handle page-tool row-modifier", this._container);
-      this._addRow = L.DomUtil.create("div", "modifier-btn add-btn", this._rowModifier);
-      //this._addRow.innerHTML = "+";
-      this._createInnerText(this._addRow, "+");
-      this._minusRow = L.DomUtil.create("div", "modifier-btn subtract-btn", this._rowModifier);
-      //this._minusRow.innerHTML = "&#8722;";
-      this._createInnerText(this._minusRow, "&#8722;");
-
-      // col
-      this._colModifier = L.DomUtil.create("div", "leaflet-areaselect-handle page-tool col-modifier", this._container);
-      this._addCol = L.DomUtil.create("div", "modifier-btn add-btn", this._colModifier);
-      //this._addCol.innerHTML = "+";
-      this._createInnerText(this._addCol, "+");
-      this._minusCol = L.DomUtil.create("div", "modifier-btn subtract-btn", this._colModifier);
-      //this._minusCol.innerHTML = "&#8722;";
-      this._createInnerText(this._minusCol, "&#8722;");
-
       var gridModifiers = document.getElementsByClassName("math");
       this._addRow = gridModifiers[2];
       this._minusRow = gridModifiers[0];
       this._addCol = gridModifiers[5];
       this._subCol = gridModifiers[3]
-      
-      //console.log(thing[0]);
 
       L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
       L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
       L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
       L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
-    },
-
-    _createInnerText: function(container, text) {
-      var c = L.DomUtil.create("div", "", container);
-      c.innerHTML = text;
     },
     
     _createElements: function() {
@@ -271,10 +246,10 @@ L.PageComposer = L.Class.extend({
         this._grid =        L.DomUtil.create("div", "leaflet-areaselect-grid", this._container);
 
         // shade layers
-        this._topShade =    L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
-        this._bottomShade = L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
-        this._leftShade =   L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
-        this._rightShade =  L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
+        // this._topShade =    L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
+        // this._bottomShade = L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
+        // this._leftShade =   L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
+        // this._rightShade =  L.DomUtil.create("div", "leaflet-areaselect-shade", this._container);
 
         // add/remove page btns
         this._createPageModifiers();
@@ -303,13 +278,7 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapMovement: function(){
-        this._updateNWPosition(this.dimensions.nw);
-    },
-
-    _updateNWPosition: function(pos) {
-      this.nwPosition = pos;
-      this.nwLocation = this.map.containerPointToLatLng(pos);
-      this.bounds = this._getBoundsPinToCenter();
+        this.bounds = this._getBoundsPinToCenter();
     },
 
     //affected zoom?
@@ -530,33 +499,33 @@ L.PageComposer = L.Class.extend({
       this._updatePageGridPosition(nw.x, nw.y, width, height);
 
       // position shades
-      this._updateGridElement(this._topShade, {
-        width:size.x,
-        height:nw.y > 0 ? nw.y : 0,
-        top:0,
-        left:0
-      });
+      // this._updateGridElement(this._topShade, {
+      //   width:size.x,
+      //   height:nw.y > 0 ? nw.y : 0,
+      //   top:0,
+      //   left:0
+      // });
 
-      this._updateGridElement(this._bottomShade, {
-        width:size.x,
-        height: bottomHeight > 0 ? bottomHeight : 0,
-        bottom:0,
-        left:0
-      });
+      // this._updateGridElement(this._bottomShade, {
+      //   width:size.x,
+      //   height: bottomHeight > 0 ? bottomHeight : 0,
+      //   bottom:0,
+      //   left:0
+      // });
 
-      this._updateGridElement(this._leftShade, {
-          width: nw.x > 0 ? nw.x : 0,
-          height: height,
-          top: nw.y,
-          left: 0
-      });
+      // this._updateGridElement(this._leftShade, {
+      //     width: nw.x > 0 ? nw.x : 0,
+      //     height: height,
+      //     top: nw.y,
+      //     left: 0
+      // });
 
-      this._updateGridElement(this._rightShade, {
-          width: rightWidth > 0 ? rightWidth : 0,
-          height: height,
-          top: nw.y,
-          right: 0
-      });
+      // this._updateGridElement(this._rightShade, {
+      //     width: rightWidth > 0 ? rightWidth : 0,
+      //     height: height,
+      //     top: nw.y,
+      //     right: 0
+      // });
 
       // position handles
       this._updateGridElement(this._scaleHandle, {left:nw.x + width, top:nw.y + height});

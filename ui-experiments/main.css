@@ -271,31 +271,13 @@ body {
     cursor: move;
 }
 
-.leaflet-areaselect-handle.drag-handle,
 .leaflet-areaselect-handle.scale-handle {
-    background-color: transparent;
-    background-repeat: no-repeat;
-    width: 46px;
-    height: 46px;
-    margin-top: -23px;
-    margin-left: -23px;
-}
-
-.leaflet-areaselect-handle.drag-handle {
-    background-image: url(asset-path('ui/button-move-atlas-off.png'));
-
-    &:hover {
-        background-image: url(asset-path('ui/button-move-atlas-on.png'));
-    }
-}
-
-.leaflet-areaselect-handle.scale-handle {
-    background-image: url(asset-path('ui/button-scale-atlas-off.png'));
-
-    &:hover,
-    .scaling & {
-        background-image: url(asset-path('ui/button-scale-atlas-on.png'));
-    }
+    background-color: white;
+    border: solid 2px black;
+    width: 10px;
+    height: 10px;
+/*    margin-top: 23px;
+    margin-left: 23px;*/
 }
 
 
@@ -336,31 +318,6 @@ body {
     -webkit-transform: translateY(-50%);
         -ms-transform: translateY(-50%);
             transform: translateY(-50%);
-}
-
-.leaflet-areaselect-handle .add-btn {
-    width: 24px;
-    height: 24px;
-    margin-top: -12px;
-    margin-left: -12px;
-    font-size: 19px;
-}
-
-.leaflet-areaselect-handle .subtract-btn {
-    margin-top: -28px;
-    margin-left: -9px;
-}
-
-.leaflet-areaselect-handle .col-modifier .subtract-btn {
-    margin-left: -28px;
-    margin-top: -9px;
-}
-
-.one-col .col-modifier .subtract-btn {
-    display:none;
-}
-.one-row .row-modifier .subtract-btn {
-    display:none;
 }
 
 .leaflet-areaselect-grid {
