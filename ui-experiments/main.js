@@ -247,12 +247,17 @@ L.PageComposer = L.Class.extend({
       this._createInnerText(this._minusCol, "&#8722;");
 
       var gridModifiers = document.getElementsByClassName("math");
+      this._addRow = gridModifiers[2];
+      this._minusRow = gridModifiers[0];
+      this._addCol = gridModifiers[5];
+      this._subCol = gridModifiers[3]
+      
       //console.log(thing[0]);
 
-      L.DomEvent.addListener(gridModifiers[2], "click", this._onAddRow, this);
-      L.DomEvent.addListener(gridModifiers[0], "click", this._onSubtractRow, this);
-      L.DomEvent.addListener(gridModifiers[5], "click", this._onAddCol, this);
-      L.DomEvent.addListener(gridModifiers[3], "click", this._onSubtractCol, this);
+      L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
+      L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
+      L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
+      L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
     },
 
     _createInnerText: function(container, text) {
@@ -284,6 +289,7 @@ L.PageComposer = L.Class.extend({
         this._calculateInitialPositions();
         this._setDimensions();
         this._createPages();
+        this._onSearch();
 
         //this.map.on("move",     this._onMapMovement, this);
         this.map.on("moveend",  this._onMapMovement, this);
@@ -293,17 +299,10 @@ L.PageComposer = L.Class.extend({
         this.fire("change");
     },
 
-    // Adds the scale & drag buttons
+    // Adds the scale button
     _createContainerModifiers: function() {
       // scale button
       this._setScaleHandler(L.DomUtil.create("div", "leaflet-areaselect-handle scale-handle", this._container), -1, -1);
-
-      // drag button
-      // if (typeof L.DraggableAny === 'function') {
-      //   this._dragHandle = L.DomUtil.create("div", "leaflet-areaselect-handle drag-handle", this._container);
-      //   var draggable = new L.DraggableAny(this._dragHandle, null, this._getPos, this._setPos, this);
-      //   draggable.enable();
-      // }
     },
 
     _onMapMovement: function(){
@@ -316,9 +315,8 @@ L.PageComposer = L.Class.extend({
       this.bounds = this._getBoundsPinToNorthWest();
     },
 
+    //affected zoom?
     _onMapReset: function() {
-      this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
-      //this._render();
       this.fire("change");
     },
 
@@ -449,6 +447,33 @@ L.PageComposer = L.Class.extend({
         }
         L.DomEvent.addListener(handle, "mousedown", onMouseDown);
     },
+
+    _updateLocation: function(location){
+      var self = this;
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200){
+          var data = JSON.parse(xhr.responseText);
+          self.map.fitBounds([
+            [data[0].boundingbox[0],data[0].boundingbox[2]],
+            [data[0].boundingbox[1],data[0].boundingbox[3]]
+          ]);
+          
+        }
+      };
+      xhr.open("GET", "http://nominatim.openstreetmap.org/search/?format=json&limit=1&q="+location, true);
+      xhr.send(null);
+    },
+
+    _onSearch: function(){
+      var form = document.forms[0];
+      var self = this;
+      //console.log(form.searchBox);
+      L.DomEvent.addListener(form, "submit", function(e){
+        L.DomEvent.preventDefault(e);
+        self._updateLocation(form.searchBox.value);
+        }, self);
+    },
     
     _onMapResize: function() {
         //this._render();
@@ -485,25 +510,26 @@ L.PageComposer = L.Class.extend({
     },
     
     _render: function() {
+       
 
-        var size = this.map.getSize();
+      var size = this.map.getSize();
 
-        if (!this.nwPosition) {
-            this._calculateInitialPositions();
-        }
+      if (!this.nwPosition) {
+          this._calculateInitialPositions();
+      }
 
-        this._setDimensions();
+      this._setDimensions();
 
-        var nw = this.dimensions.nw,
-          ne = this.dimensions.ne,
-          sw = this.dimensions.sw,
-          se = this.dimensions.se,
-          width = this.dimensions.width,
-          height = this.dimensions.height,
-          rightWidth = size.x - width - nw.x,
-          bottomHeight = size.y - height - nw.y;
+      var nw = this.dimensions.nw,
+        ne = this.dimensions.ne,
+        sw = this.dimensions.sw,
+        se = this.dimensions.se,
+        width = this.dimensions.width,
+        height = this.dimensions.height,
+        rightWidth = size.x - width - nw.x,
+        bottomHeight = size.y - height - nw.y;
 
-        this._updatePageGridPosition(nw.x, nw.y, width, height);
+      this._updatePageGridPosition(nw.x, nw.y, width, height);
 
       // position shades
       this._updateGridElement(this._topShade, {
@@ -535,13 +561,8 @@ L.PageComposer = L.Class.extend({
       });
 
       // position handles
-      // this._updateGridElement(this._dragHandle, {left:nw.x, top:nw.y });
       this._updateGridElement(this._scaleHandle, {left:nw.x + width, top:nw.y + height});
 
-      // this._updateGridElement(this._rowModifier, {left:nw.x + (width / 2), top:nw.y + height});
-      // this._updateGridElement(this._colModifier, {left:nw.x + width, top:nw.y + (height/2)});
-        
-        
     },
 
 
@@ -549,16 +570,28 @@ L.PageComposer = L.Class.extend({
 
 
 var map = L.map('map', {
-    center: [40.712216, -74.22655],
+    center: [35.2048883, -92.4479108],
     zoom: 18,
     scrollWheelZoom: false
 });
+
+var southWest = L.latLng(40.712, -74.227),
+    northEast = L.latLng(40.774, -74.125),
+    bounds = L.latLngBounds(southWest, northEast);
+
+map.fitBounds([[33.004106,
+      -94.617812],
+      [36.4996,
+      -89.6422485]
+    ]);
 
 L.pageComposer = function(options) {
     return new L.PageComposer(options);
 };
 
 L.pageComposer().addTo(map);
+
+//L.pageComposer()._onSearch();
 
 
 //
