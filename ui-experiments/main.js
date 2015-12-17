@@ -115,7 +115,6 @@ L.PageComposer = L.Class.extend({
       div.style.top = y + "%";
       div.style.height = h + "%";
       div.style.width = w + "%";
-      console.log(div);
       return div;
     },
 
@@ -206,15 +205,29 @@ L.PageComposer = L.Class.extend({
     },
 
     _updateToolDimensions: function() {
+      var size = this.map.getSize();
+
       if (this.refs.cols !== this.refs.prevCols) {
         var width = this.dimensions.width / this.refs.prevCols;
         this.dimensions.width = width * this.refs.cols;
+
+        if (this.dimensions.width > size.x - 40) {
+          this.dimensions.width = size.x - 40;
+          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        }
+
         this.refs.prevCols = this.refs.cols;
       }
 
       if (this.refs.rows !== this.refs.prevRows) {
         var height = this.dimensions.height / this.refs.prevRows;
         this.dimensions.height = height * this.refs.rows;
+
+        if (this.dimensions.height > size.y - 40) {
+          this.dimensions.height = size.y - 40;
+          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+        }
+
         this.refs.prevRows = this.refs.rows;
       }
 
@@ -434,7 +447,7 @@ L.PageComposer = L.Class.extend({
     _onSearch: function(){
       var form = document.forms[0];
       var self = this;
-      //console.log(form.searchBox);
+      
       L.DomEvent.addListener(form, "submit", function(e){
         L.DomEvent.preventDefault(e);
         self._updateLocation(form.searchBox.value);
@@ -568,13 +581,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
     maxZoom: 18,
     id: 'mapbox.streets',
     accessToken: 'pk.eyJ1IjoibGluempheCIsImEiOiJjaWh6Y2hnZGIwNDkzdGxtMXJvMHVidzByIn0.Q1vAOjJ2H2pmJsxap7c2bQ'
-    }).addTo(map);
-
-// var bounds = areaSelect.getBounds();
-
-// areaSelect.on("change", function(){
-//     console.log("Bounds:", this.getBounds());
-// });
+    }).addTo(map); 
 
 
 
