@@ -4,6 +4,10 @@ body {
 	margin: 0;
 }
 
+form {
+  margin-bottom: 20px;
+}
+
 #container {
 	width: 100%;
 	top: 0;

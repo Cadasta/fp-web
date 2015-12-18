@@ -68,6 +68,28 @@ L.PageComposer = L.Class.extend({
         return new L.LatLngBounds(sw, ne);
     },
 
+    _setOrientation: function(x) {
+
+      if (this.refs.paper_aspect_ratios[this.refs.paperSize][x] &&
+          this.refs.page_aspect_ratio !== this.refs.paper_aspect_ratios[this.refs.paperSize][x]) {
+
+        this.refs.pageOrientation = x;
+        this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][x];
+
+        this._updateAspectRatio();
+
+        // if the flop is outside the map bounds, contain it.
+        var mapBds = this.map.getBounds();
+        if(!mapBds.contains(this.bounds)) {
+          this.map.fitBounds(this.bounds, {animate: false});
+        }
+
+        this.fire("change");
+      }
+
+      return this;
+    },
+
     _getBoundsPinToCenter: function() {
       var size = this.map.getSize();
       var topRight = new L.Point();
@@ -236,6 +258,16 @@ L.PageComposer = L.Class.extend({
       this._render();
     },
 
+    _updateAspectRatio: function(){
+      //switch from landscape to portrait
+      this.dimensions.height = this.dimensions.cellWidth * this.refs.rows;
+      this.dimensions.width = this.dimensions.cellHeight * this.refs.cols;
+
+      // re-calc bounds
+      this.bounds = this._getBoundsPinToCenter();
+      this._render();
+    },
+
     //adds +/-
     _createPageModifiers: function() {
       var gridModifiers = document.getElementsByClassName("math");
@@ -275,6 +307,7 @@ L.PageComposer = L.Class.extend({
         this._setDimensions();
         this._createPages();
         this._onSearch();
+        this._onReorientation();
 
         //this.map.on("move",     this._onMapMovement, this);
         this.map.on("moveend",  this._onMapMovement, this);
@@ -453,6 +486,18 @@ L.PageComposer = L.Class.extend({
         self._updateLocation(form.searchBox.value);
         }, self);
     },
+
+    _onReorientation: function(){
+      var form = document.getElementById("page-layout");
+      var self = this;
+      
+      L.DomEvent.addListener(form, "change", function(){
+        var selected = this["page-aspect-ratio"];
+        self._setOrientation(selected[selected.selectedIndex].value);
+      });
+    },
+
+    
     
     _onMapResize: function() {
         //this._render();
