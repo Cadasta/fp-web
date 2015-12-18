@@ -90,6 +90,22 @@ L.PageComposer = L.Class.extend({
       return this;
     },
 
+    _setPaperSize: function(x) {
+      if (x === this.refs.paperSize || !this.refs.paper_aspect_ratios[x]) return this;
+      this.refs.paperSize = x;
+      this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
+
+      this._updateScale();
+      // if the new size is outside the map bounds, contain it.
+      var mapBds = this.map.getBounds();
+      if(!mapBds.contains(this.bounds)) {
+        this.map.fitBounds(this.bounds, {animate: false});
+      }
+
+      this.fire("change");
+      return this;
+    },
+
     _getBoundsPinToCenter: function() {
       var size = this.map.getSize();
       var topRight = new L.Point();
@@ -268,6 +284,25 @@ L.PageComposer = L.Class.extend({
       this._render();
     },
 
+    _updateScale: function(){
+      //switch between letter/a3/a4
+      var scale = this.refs.paper_aspect_ratios[this.refs.paperSize].scale;
+
+      if (scale > this.refs.toolScale) {
+        this.dimensions.width = this.dimensions.width * scale;
+        this.refs.toolScale = scale;
+      } else if (scale < this.refs.toolScale) {
+        this.dimensions.width = this.dimensions.width / this.refs.toolScale;
+        this.refs.toolScale = scale;
+      }
+
+      this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+
+      // re-calc bounds
+      this.bounds = this._getBoundsPinToCenter();
+      this._render();
+    },
+
     //adds +/-
     _createPageModifiers: function() {
       var gridModifiers = document.getElementsByClassName("math");
@@ -308,6 +343,7 @@ L.PageComposer = L.Class.extend({
         this._createPages();
         this._onSearch();
         this._onReorientation();
+        this._onPaperSizeChange();
 
         //this.map.on("move",     this._onMapMovement, this);
         this.map.on("moveend",  this._onMapMovement, this);
@@ -497,7 +533,16 @@ L.PageComposer = L.Class.extend({
       });
     },
 
-    
+    _onPaperSizeChange: function(){
+      var form = document.getElementById("page-layout");
+      var self = this;
+
+      L.DomEvent.addListener(form, "change", function(){
+        var selected = this["page-scale"];
+        console.log(selected);
+        self._setPaperSize(selected[selected.selectedIndex].value);
+      });
+    },
     
     _onMapResize: function() {
         //this._render();
