@@ -431,10 +431,27 @@ L.PageComposer = L.Class.extend({
       L.DomUtil.disableTextSelection();
       L.DomUtil.addClass(this._container, 'scaling');
 
-      var nwPt = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
-      var maxHeightY = size.y - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).y - this.options.paddingToEdge;
-      var maxHeightX = (size.x - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).x - this.options.paddingToEdge) * 1/this._scaleProps.ratio;
-      this._scaleProps.maxHeight = Math.min(maxHeightY, maxHeightX);
+      // var nwPt = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
+      // var maxHeightY = size.y - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).y;
+      // console.log("y: ", this.map.latLngToContainerPoint(this.bounds.getNorthWest()).y, size.y)
+      // var maxHeightX = size.x// - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).x - this.options.paddingToEdge)// * 1/this._scaleProps.ratio;
+      // console.log("x: ", this.map.latLngToContainerPoint(this.bounds.getNorthWest()).x, size.x)
+
+
+      if (this.dimensions.width > this.dimensions.height){
+        var ratio = this.dimensions.width / this.dimensions.height;
+        console.log(ratio, this.dimensions.width);
+        var maxHeightY = (size.x / ratio) - 20;
+        this._scaleProps.maxHeight = maxHeightY;
+      } else {
+        this._scaleProps.maxHeight = size.y - 20;
+      }
+
+
+
+
+
+      //this._scaleProps.maxHeight = Math.min(maxHeightY, maxHeightX);
 
       L.DomEvent.addListener(this.map, "mousemove", this._onScaleMouseMove, this);
       L.DomEvent.addListener(this.map, "mouseup", this._onScaleMouseUp, this);
@@ -449,52 +466,7 @@ L.PageComposer = L.Class.extend({
       this.fire("change");
     },
     
-    _setUpHandlerEvents: function(handle, xMod, yMod) {
-        xMod = xMod || 1;
-        yMod = yMod || 1;
-        
-        var self = this;
-        function onMouseDown(event) {
-            event.stopPropagation();
-            L.DomEvent.removeListener(this, "mousedown", onMouseDown);
-            var curX = event.pageX;
-            var curY = event.pageY;
-            var ratio = self._width / self._height;
-            var size = self.map.getSize();
-            
-            function onMouseMove(event) {
-                if (self.options.keepAspectRatio) {
-                    var maxHeight = (self._height >= self._width ? size.y : size.y * (1/ratio) ) - 30;
-                    self._height += (curY - event.originalEvent.pageY) * 2 * yMod;
-                    self._height = Math.max(30, self._height);
-                    self._height = Math.min(maxHeight, self._height);
-                    self._width = self._height * ratio;
-                } else {
-                    self._width += (curX - event.originalEvent.pageX) * 2 * xMod;
-                    self._height += (curY - event.originalEvent.pageY) * 2 * yMod;
-                    self._width = Math.max(30, self._width);
-                    self._height = Math.max(30, self._height);
-                    self._width = Math.min(size.x-30, self._width);
-                    self._height = Math.min(size.y-30, self._height);
-                    
-                }
-                
-                curX = event.originalEvent.pageX;
-                curY = event.originalEvent.pageY;
-                self._render();
-            }
-            function onMouseUp(event) {
-                L.DomEvent.removeListener(self.map, "mouseup", onMouseUp);
-                L.DomEvent.removeListener(self.map, "mousemove", onMouseMove);
-                L.DomEvent.addListener(handle, "mousedown", onMouseDown);
-                self.fire("change");
-            }
-            
-            L.DomEvent.addListener(self.map, "mousemove", onMouseMove);
-            L.DomEvent.addListener(self.map, "mouseup", onMouseUp);
-        }
-        L.DomEvent.addListener(handle, "mousedown", onMouseDown);
-    },
+    
 
     _updateLocation: function(location){
       var self = this;
