@@ -1,7 +1,7 @@
 body {
-  width: 100%;
-  padding: 0;
-  margin: 0;
+	width: 100%;
+	padding: 0;
+	margin: 0;
 }
 
 form {
@@ -9,80 +9,41 @@ form {
 }
 
 #container {
-  width: 100%;
-  top: 0;
-  left: 0;
-  padding: 0;
-  margin: 0;
-  position: relative;
+	width: 100%;
+	top: 0;
+	left: 0;
+	padding: 0;
+	margin: 0;
+	position: relative;
 }
 
 #menu {
-  margin: 0;
-  padding: 0;
-  border: 2px solid black;
-  width: 200px;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  position: absolute;
-  z-index: 999999;
-  /*text-align: center;*/
+	margin: 0;
+	padding: 0;
+	border: 2px solid black;
+	width: 200px;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	position: absolute;
+	z-index: 999999;
+	text-align: center;
 }
-
-#menu p {
-  text-align: left;
-  margin: 5px 0;
-  padding: 0;
-}
-
-#page-layout, 
-  #search, 
-  #menu .col-row-modifiers,
-  .atlas-information {
-  margin-left: 5px;
-}
-
-#page-layout select {
-  margin-bottom: 10px;
-}
-
-#page-layout {
-  margin-bottom: 0;
-}
-
 
 #menu .math {
-  text-align: center;
-  padding: 5px;
-  border: solid black 1px;
-  width: 20px;
-  margin: 0;
-  display: inline-block;
-  margin-bottom: 0;
-  cursor: pointer;
-  -webkit-user-select: none;  /* Chrome all / Safari all */
-  -moz-user-select: none;     /* Firefox all */
-  -ms-user-select: none;  
-  user-select: none;
-}
-
-.atlas-information {
-  margin-top: 10px;
-}
-
-.atlas-information fieldset {
-  border: none;
-  padding: 0;
-  margin: 10px 0;
+	padding: 10px;
+	border: solid black 2px;
+	width: 20px;
+	margin: 0 auto;
+	display: inline-block;
 }
 
 #map { 
-  margin: 0;
-  margin-left: 200px;
-  padding: 0;
-  height: 100vh;
-  width: calc(100vw - 200px);
+	margin: 0;
+	margin-left: 200px;
+	padding: 0;
+	height: 100vh;
+	width: calc(100vw - 200px);
 }
 
 
