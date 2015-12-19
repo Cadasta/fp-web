@@ -244,6 +244,7 @@ L.PageComposer = L.Class.extend({
 
     _updateToolDimensions: function() {
       var size = this.map.getSize();
+      var count = document.getElementsByClassName("number");
 
       if (this.refs.cols !== this.refs.prevCols) {
         var width = this.dimensions.width / this.refs.prevCols;
@@ -255,6 +256,7 @@ L.PageComposer = L.Class.extend({
         }
 
         this.refs.prevCols = this.refs.cols;
+        count[1].textContent = this.refs.cols;
       }
 
       if (this.refs.rows !== this.refs.prevRows) {
@@ -267,6 +269,7 @@ L.PageComposer = L.Class.extend({
         }
 
         this.refs.prevRows = this.refs.rows;
+        count[0].textContent = this.refs.rows;
       }
 
       // re-calc bounds
@@ -431,27 +434,14 @@ L.PageComposer = L.Class.extend({
       L.DomUtil.disableTextSelection();
       L.DomUtil.addClass(this._container, 'scaling');
 
-      // var nwPt = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
-      // var maxHeightY = size.y - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).y;
-      // console.log("y: ", this.map.latLngToContainerPoint(this.bounds.getNorthWest()).y, size.y)
-      // var maxHeightX = size.x// - this.map.latLngToContainerPoint(this.bounds.getNorthWest()).x - this.options.paddingToEdge)// * 1/this._scaleProps.ratio;
-      // console.log("x: ", this.map.latLngToContainerPoint(this.bounds.getNorthWest()).x, size.x)
-
 
       if (this.dimensions.width > this.dimensions.height){
         var ratio = this.dimensions.width / this.dimensions.height;
-        console.log(ratio, this.dimensions.width);
         var maxHeightY = (size.x / ratio) - 20;
         this._scaleProps.maxHeight = maxHeightY;
       } else {
         this._scaleProps.maxHeight = size.y - 20;
       }
-
-
-
-
-
-      //this._scaleProps.maxHeight = Math.min(maxHeightY, maxHeightX);
 
       L.DomEvent.addListener(this.map, "mousemove", this._onScaleMouseMove, this);
       L.DomEvent.addListener(this.map, "mouseup", this._onScaleMouseUp, this);
@@ -511,7 +501,6 @@ L.PageComposer = L.Class.extend({
 
       L.DomEvent.addListener(form, "change", function(){
         var selected = this["page-scale"];
-        console.log(selected);
         self._setPaperSize(selected[selected.selectedIndex].value);
       });
     },
