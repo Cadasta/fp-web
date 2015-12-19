@@ -251,9 +251,8 @@ L.PageComposer = L.Class.extend({
         this.dimensions.width = width * this.refs.cols;
 
         if (this.dimensions.width > size.x - 40) {
-          /*
-            I want the map to zoom out and the grid to shrink accordingly.
-          */
+          this.map.zoomOut();
+          this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
         }
 
         this.refs.prevCols = this.refs.cols;
@@ -263,6 +262,11 @@ L.PageComposer = L.Class.extend({
       if (this.refs.rows !== this.refs.prevRows) {
         var height = this.dimensions.height / this.refs.prevRows;
         this.dimensions.height = height * this.refs.rows;
+
+        if (this.dimensions.height > size.y - 40) {
+          this.map.zoomOut();
+          this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+        }
 
         this.refs.prevRows = this.refs.rows;
         count[0].textContent = this.refs.rows;
@@ -364,8 +368,12 @@ L.PageComposer = L.Class.extend({
 
     //affected zoom?
     _onMapReset: function() {
+      this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+      this._render();
       this.fire("change");
     },
+
+
 
     // Handler for when the tool is scaled
     _setScaleHandler: function(handle, xMod, yMod) {
