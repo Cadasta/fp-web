@@ -29,6 +29,7 @@ SIDE MENU
   box-sizing: border-box;
   display: flex;
   flex-flow: column nowrap;
+  overflow-y: auto;
 
   position: absolute;
   top: 0;
@@ -48,7 +49,12 @@ SIDE MENU
 
 #menu .field-papers-logo img {
   width: 90%;
-  margin: 10px 0;
+  margin-top: 10px;
+}
+
+#menu h3 {
+  padding-top: 5px;
+  border-top: 2px solid #eee;
 }
 
 #menu .map-location-search {
@@ -160,17 +166,14 @@ SIDE MENU
 
 #menu .page-layout-label,
   #menu .col-row-modifiers-label,
-  #menu .basemap-selector-label {
+  #menu .basemap-selector-label,
+  #menu .atlas-information .title,
+  #menu .atlas-information .notes {
     font-weight: 600;
   }
 
 #menu .basemap-selector-label {
   margin-top: 10px;
-}
-
-
-#menu .atlas-information {
-  /*margin-top: 10px;*/
 }
 
 #menu .atlas-information fieldset {
@@ -179,8 +182,36 @@ SIDE MENU
   margin: 10px 0;
 }
 
+#menu .atlas-information textarea {
+  display: inline-block;
+  width: 86%;
+  max-width: 86%;
+  padding: 5px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  color: #444;
 
+  -webkit-appearance: none;
+}
 
+#menu .atlas-information .final-step {
+  width: 70%;
+  margin-left: 10%;
+  font-size: 15px;
+  background-color: #444;
+  color: #bbb;
+  border-color: 1px solid #d1d1d1;
+  margin-top: 10px;
+}
+
+#menu .atlas-information .final-step:hover {
+  color: #fff;
+}
 
 
 

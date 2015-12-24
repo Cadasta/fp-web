@@ -308,11 +308,11 @@ L.PageComposer = L.Class.extend({
 
     //adds +/-
     _createPageModifiers: function() {
-      var gridModifiers = document.getElementsByClassName("math");
-      this._addRow = gridModifiers[2];
-      this._minusRow = gridModifiers[0];
+      var gridModifiers = document.getElementsByClassName("grid-modifier");
+      this._addRow = gridModifiers[1];
+      this._minusRow = gridModifiers[2];
       this._addCol = gridModifiers[5];
-      this._subCol = gridModifiers[3]
+      this._subCol = gridModifiers[3];
 
       L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
       L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
@@ -348,7 +348,7 @@ L.PageComposer = L.Class.extend({
         this._onReorientation();
         this._onPaperSizeChange();
 
-        //this.map.on("move",     this._onMapMovement, this);
+        this.map.on("move",     this._onMapMovement, this);
         this.map.on("moveend",  this._onMapMovement, this);
         this.map.on("viewreset",  this._onMapReset, this);
         this.map.on("resize",   this._onMapReset, this);
@@ -363,6 +363,7 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapMovement: function(){
+        //this._render();
         this.bounds = this._getBoundsPinToCenter();
     },
 

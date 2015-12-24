@@ -16,6 +16,7 @@
   		  <img src="/public/img/icon.png">
       </div>
 
+      <h3>Atlas Navigation</h3>
 			<form id="map-location-search">
   			<label class="item item-input">
   			  <i class="icon ion-search placeholder-icon"></i>
@@ -79,23 +80,23 @@
       <div class="atlas-information">
         <h3>Atlas Information</h3>
         <form id="printing-information">
-          <label class="title">Atlas Title <br />
+          <label class="title">Title <br />
             <input type="text" placeholder="Name of the atlas" value="" />
           </label>
           <br />
           <fieldset>
               <input type="radio" name="notes" value="Map-Only" />Map Only<br />
-              <input type="radio" name="notes" value="Map-Notes" />Map + Notes<br />
+              <input type="radio" name="notes" value="Map-Notes" checked/>Map + Notes<br />
           </fieldset>
-          <label class="notes">Notes <br />
-            <textarea placeholder="name of atlast" value=""> </textarea>
+          <label class="notes">Notes<br />
+            <textarea placeholder="Notes to be included" value="" cols="20" rows="5" wrap="hard" ></textarea>
           </label>
           <fieldset>
-            <input type="checkbox" name="private" value="Private" />Private Map <br />
+            <input type="checkbox" name="private" value="Private" />Private Map<br />
             <input type="checkbox" name="adv-grid" value="UTMGrid" />UTM Grid<br />
             <input type="checkbox" name="adv-grid" value="GADMOverlay" />GADM Overlay<br />
           </fieldset>
-          <input type="submit">
+          <input type="submit" class="final-step" value="Download">
         </form>
       </div>
     </div>
