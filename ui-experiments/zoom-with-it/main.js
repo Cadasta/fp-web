@@ -363,8 +363,8 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapMovement: function(){
-        //this._render();
         this.bounds = this._getBoundsPinToCenter();
+        this._render();
     },
 
     //affected zoom?
@@ -473,6 +473,8 @@ L.PageComposer = L.Class.extend({
             [data[0].boundingbox[0],data[0].boundingbox[2]],
             [data[0].boundingbox[1],data[0].boundingbox[3]]
           ]);
+          //self.bounds = self._getBoundsPinToCenter();
+          //self._render();
           
         }
       };
