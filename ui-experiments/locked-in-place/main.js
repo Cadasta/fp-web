@@ -111,6 +111,7 @@ L.PageComposer = L.Class.extend({
       var size = this.map.getSize();
       var topRight = new L.Point();
       var bottomLeft = new L.Point();
+      console.log(this.nwPosition);
 
       bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
       topRight.y = Math.round((size.y - this.dimensions.height) / 2);
@@ -141,10 +142,13 @@ L.PageComposer = L.Class.extend({
       return new L.LatLngBounds(sw, ne);
     },
 
-    _updateNWPosition: function(pos) {
-      this.nwPosition = pos;
-      this.nwLocation = this.map.containerPointToLatLng(pos);
-      this.bounds = this._getBoundsPinToNorthWest();
+    _updateNWPosition: function() {
+      var size = this.map.getSize();
+
+      var topBottomHeight = Math.round((size.y-this._height)/2);
+      var leftRightWidth = Math.round((size.x-this._width)/2);
+      this.nwPosition = new L.Point(leftRightWidth + this.offset.x, topBottomHeight + this.offset.y);
+      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
     },
 
     _setDimensions: function() {
@@ -267,16 +271,6 @@ L.PageComposer = L.Class.extend({
       this.fire("change");
     },
 
-    _getPos: function(ctx) {
-      return this.map.latLngToContainerPoint(this.nwLocation);
-    },
-
-    _setPos: function(pos, delta){
-      this._updateNWPosition(pos);
-      this._render();
-      this._limitChangeFire();
-    },
-
     _updateToolDimensions: function() {
       var size = this.map.getSize();
       var count = document.getElementsByClassName("number");
@@ -311,6 +305,7 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -325,6 +320,7 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -348,6 +344,7 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -410,6 +407,7 @@ L.PageComposer = L.Class.extend({
         this._render();
         this.fire("change");
       } else {
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
     },
@@ -468,6 +466,7 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._setDimensions();
@@ -569,7 +568,7 @@ L.PageComposer = L.Class.extend({
 
       L.DomEvent.addListener(mapLockStatus, "change", function(){
         self.refs.locked = mapLockStatus.checked;
-        self._setPos(self._getPos);
+
       });
     },
 
