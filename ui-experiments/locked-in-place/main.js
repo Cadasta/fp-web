@@ -111,7 +111,6 @@ L.PageComposer = L.Class.extend({
       var size = this.map.getSize();
       var topRight = new L.Point();
       var bottomLeft = new L.Point();
-      console.log(this.nwPosition);
 
       bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
       topRight.y = Math.round((size.y - this.dimensions.height) / 2);
@@ -141,6 +140,7 @@ L.PageComposer = L.Class.extend({
 
       return new L.LatLngBounds(sw, ne);
     },
+
 
     _updateNWPosition: function() {
       var size = this.map.getSize();
@@ -407,7 +407,7 @@ L.PageComposer = L.Class.extend({
         this._render();
         this.fire("change");
       } else {
-        this._updateNWPosition();
+        //dthis._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
     },
@@ -568,6 +568,22 @@ L.PageComposer = L.Class.extend({
 
       L.DomEvent.addListener(mapLockStatus, "change", function(){
         self.refs.locked = mapLockStatus.checked;
+        if (self.refs.locked === false){
+          //console.log
+          //reset the map to be centered.
+
+        
+          self.map.fitBounds([
+            self.bounds.getNorthWest(),
+            self.bounds.getSouthEast()
+          ]);
+          console.log('something happened')
+          self._calculateInitialPositions();
+          self._render();
+          
+          //map fit bounds of the grid?
+          
+        }
 
       });
     },
