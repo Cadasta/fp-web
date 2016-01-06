@@ -107,6 +107,18 @@ L.PageComposer = L.Class.extend({
       return this;
     },
 
+    _setDimensions: function() {
+      this.dimensions.nw = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
+      this.dimensions.ne = this.map.latLngToContainerPoint(this.bounds.getNorthEast());
+      this.dimensions.sw = this.map.latLngToContainerPoint(this.bounds.getSouthWest());
+      this.dimensions.se = this.map.latLngToContainerPoint(this.bounds.getSouthEast());
+      this.dimensions.width = this.dimensions.ne.x - this.dimensions.nw.x;
+      this.dimensions.height = this.dimensions.se.y - this.dimensions.ne.y;
+
+      this.dimensions.cellWidth = this.dimensions.width / this.refs.cols;
+      this.dimensions.cellHeight = this.dimensions.height / this.refs.rows;
+    },
+
     _getBoundsPinToCenter: function() {
       var size = this.map.getSize();
       var topRight = new L.Point();
@@ -151,24 +163,12 @@ L.PageComposer = L.Class.extend({
       this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
     },
 
-    _setDimensions: function() {
-      this.dimensions.nw = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
-      this.dimensions.ne = this.map.latLngToContainerPoint(this.bounds.getNorthEast());
-      this.dimensions.sw = this.map.latLngToContainerPoint(this.bounds.getSouthWest());
-      this.dimensions.se = this.map.latLngToContainerPoint(this.bounds.getSouthEast());
-      this.dimensions.width = this.dimensions.ne.x - this.dimensions.nw.x;
-      this.dimensions.height = this.dimensions.se.y - this.dimensions.ne.y;
-
-      this.dimensions.cellWidth = this.dimensions.width / this.refs.cols;
-      this.dimensions.cellHeight = this.dimensions.height / this.refs.rows;
-    },
-    
-
     remove: function() {
         //removed "move"
         this.map.off("moveend", this._onMapChange);
         //this.map.off("zoomend", this._onMapChange);
         this.map.off("resize", this._onMapResize);
+        this.map.off("viewreset", this._onMapReset, this);
 
         if (this._scaleHandle) L.DomEvent.removeListener(this._scaleHandle, "mousedown", this._onScaleMouseDown);
         
@@ -414,6 +414,8 @@ L.PageComposer = L.Class.extend({
 
     //affected zoom?
     _onMapReset: function() {
+      this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+      this._render();
       this.fire("change");
     },
 
@@ -569,17 +571,18 @@ L.PageComposer = L.Class.extend({
       L.DomEvent.addListener(mapLockStatus, "change", function(){
         self.refs.locked = mapLockStatus.checked;
         if (self.refs.locked === false){
-          //console.log
-          //reset the map to be centered.
-
-        
+          
           self.map.fitBounds([
-            self.bounds.getNorthWest(),
-            self.bounds.getSouthEast()
+            [self.bounds.getNorthWest().lat + 1,
+            self.bounds.getNorthWest().lng - 1],[
+            self.bounds.getSouthEast().lat - 1,
+            self.bounds.getSouthEast().lng + 1]
           ]);
-          console.log('something happened')
-          self._calculateInitialPositions();
+          // //self._calculateInitialPositions();
+          self._getBoundsPinToNorthWest
+          self.refs.zoomScale = 1 / self.map.getZoomScale(self.refs.startZoom);
           self._render();
+          self.fire("change");
           
           //map fit bounds of the grid?
           
@@ -636,35 +639,6 @@ L.PageComposer = L.Class.extend({
         bottomHeight = size.y - height - nw.y;
 
       this._updatePageGridPosition(nw.x, nw.y, width, height);
-
-      // position shades
-      // this._updateGridElement(this._topShade, {
-      //   width:size.x,
-      //   height:nw.y > 0 ? nw.y : 0,
-      //   top:0,
-      //   left:0
-      // });
-
-      // this._updateGridElement(this._bottomShade, {
-      //   width:size.x,
-      //   height: bottomHeight > 0 ? bottomHeight : 0,
-      //   bottom:0,
-      //   left:0
-      // });
-
-      // this._updateGridElement(this._leftShade, {
-      //     width: nw.x > 0 ? nw.x : 0,
-      //     height: height,
-      //     top: nw.y,
-      //     left: 0
-      // });
-
-      // this._updateGridElement(this._rightShade, {
-      //     width: rightWidth > 0 ? rightWidth : 0,
-      //     height: height,
-      //     top: nw.y,
-      //     right: 0
-      // });
 
       // position handles
       this._updateGridElement(this._scaleHandle, {left:nw.x + width, top:nw.y + height});
