@@ -91,18 +91,19 @@ L.PageComposer = L.Class.extend({
     },
 
     _setPaperSize: function(x) {
-      if (x === this.refs.paperSize || !this.refs.paper_aspect_ratios[x]) return this;
-      this.refs.paperSize = x;
-      this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
+      if (this.refs.paper_aspect_ratios[x] || x !== this.refs.paperSize) {
+        this.refs.paperSize = x;
+        this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
 
-      this._updateScale();
-      // if the new size is outside the map bounds, contain it.
-      var mapBds = this.map.getBounds();
-      if(!mapBds.contains(this.bounds)) {
-        this.map.fitBounds(this.bounds, {animate: false});
+        this._updateScale();
+        // if the new size is outside the map bounds, contain it.
+        var mapBds = this.map.getBounds();
+        if(!mapBds.contains(this.bounds)) {
+          this.map.fitBounds(this.bounds, {animate: false});
+        }
+
+        this.fire("change");
       }
-
-      this.fire("change");
       return this;
     },
 

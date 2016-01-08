@@ -50,6 +50,18 @@ L.PageComposer = L.Class.extend({
         this._render();
         return this;
     },
+
+    remove: function() {
+      //removed "move"
+      this.map.off("moveend", this._onMapChange);
+      this.map.off("zoomend", this._onMapChange);
+      this.map.off("resize", this._onMapResize);
+      this.map.off("viewreset", this._onMapReset, this);
+
+      if (this._scaleHandle) L.DomEvent.removeListener(this._scaleHandle, "mousedown", this._onScaleMouseDown);
+      
+      this._container.parentNode.removeChild(this._container);
+    },
     
     //all the same
     getBounds: function() {
@@ -73,8 +85,8 @@ L.PageComposer = L.Class.extend({
 
       var topBottomHeight = Math.round((size.y-this._height)/2);
       var leftRightWidth = Math.round((size.x-this._width)/2);
-      this.centerPosition = new L.Point(this.map.getCenter());
-      this.nwPosition = new L.Point(leftRightWidth /*+ this.offset.x*/, topBottomHeight /*+ this.offset.y*/);
+
+      this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
 
       this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
       this.bounds = this.getBounds();
@@ -108,6 +120,7 @@ L.PageComposer = L.Class.extend({
         this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
 
         this._updateScale();
+
         // if the new size is outside the map bounds, contain it.
         var mapBds = this.map.getBounds();
         if(!mapBds.contains(this.bounds)) {
@@ -165,26 +178,13 @@ L.PageComposer = L.Class.extend({
       return new L.LatLngBounds(sw, ne);
     },
 
-
     _updateNWPosition: function() {
       var size = this.map.getSize();
 
-      var topBottomHeight = Math.round((size.y-this._height)/2);
-      var leftRightWidth = Math.round((size.x-this._width)/2);
+      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
+      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
       this.nwPosition = new L.Point(leftRightWidth /*this.offset.x*/, topBottomHeight /*+ this.offset.y*/);
       this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
-    },
-
-    remove: function() {
-        //removed "move"
-        this.map.off("moveend", this._onMapChange);
-        //this.map.off("zoomend", this._onMapChange);
-        this.map.off("resize", this._onMapResize);
-        this.map.off("viewreset", this._onMapReset, this);
-
-        if (this._scaleHandle) L.DomEvent.removeListener(this._scaleHandle, "mousedown", this._onScaleMouseDown);
-        
-        this._container.parentNode.removeChild(this._container);
     },
 
     _makePageElement: function(x,y,w,h) {
@@ -419,7 +419,7 @@ L.PageComposer = L.Class.extend({
         this._render();
         this.fire("change");
       } else {
-        //dthis._updateNWPosition();
+        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
     },
@@ -587,9 +587,6 @@ L.PageComposer = L.Class.extend({
           self.map.fitBounds(self.bounds, {animation: false});
           self._render();
           self.fire("change");
-          
-          //map fit bounds of the grid?
-          
         }
 
       });
