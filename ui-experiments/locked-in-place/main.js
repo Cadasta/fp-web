@@ -527,6 +527,12 @@ L.PageComposer = L.Class.extend({
             [data[0].boundingbox[0],data[0].boundingbox[2]],
             [data[0].boundingbox[1],data[0].boundingbox[3]]
           ]);
+
+          self.refs.locked = false;
+          document.getElementById('map-lock-box').childNodes[1].checked = false;
+          self.bounds = self.getBounds();
+          self._render();
+          self.fire("change");
           
         }
       };
