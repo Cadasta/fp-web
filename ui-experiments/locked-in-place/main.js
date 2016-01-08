@@ -43,7 +43,6 @@ L.PageComposer = L.Class.extend({
         this._height = this.options.pageHeight * this.refs.rows;
     },
     
-    //all the same
     addTo: function(map) {
         this.map = map;
         this.refs.startZoom = map.getZoom();
@@ -65,8 +64,20 @@ L.PageComposer = L.Class.extend({
         
         var sw = this.map.containerPointToLatLng(bottomLeft);
         var ne = this.map.containerPointToLatLng(topRight);
-        
+
         return new L.LatLngBounds(sw, ne);
+    },
+
+    _calculateInitialPositions: function() {
+      var size = this.map.getSize();
+
+      var topBottomHeight = Math.round((size.y-this._height)/2);
+      var leftRightWidth = Math.round((size.x-this._width)/2);
+      this.centerPosition = new L.Point(this.map.getCenter());
+      this.nwPosition = new L.Point(leftRightWidth /*+ this.offset.x*/, topBottomHeight /*+ this.offset.y*/);
+
+      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
+      this.bounds = this.getBounds();
     },
 
     _setOrientation: function(x) {
@@ -92,18 +103,19 @@ L.PageComposer = L.Class.extend({
     },
 
     _setPaperSize: function(x) {
-      if (x === this.refs.paperSize || !this.refs.paper_aspect_ratios[x]) return this;
-      this.refs.paperSize = x;
-      this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
+      if (this.refs.paper_aspect_ratios[x] || x !== this.refs.paperSize) {
+        this.refs.paperSize = x;
+        this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
 
-      this._updateScale();
-      // if the new size is outside the map bounds, contain it.
-      var mapBds = this.map.getBounds();
-      if(!mapBds.contains(this.bounds)) {
-        this.map.fitBounds(this.bounds, {animate: false});
+        this._updateScale();
+        // if the new size is outside the map bounds, contain it.
+        var mapBds = this.map.getBounds();
+        if(!mapBds.contains(this.bounds)) {
+          this.map.fitBounds(this.bounds, {animate: false});
+        }
+
+        this.fire("change");
       }
-
-      this.fire("change");
       return this;
     },
 
@@ -159,7 +171,7 @@ L.PageComposer = L.Class.extend({
 
       var topBottomHeight = Math.round((size.y-this._height)/2);
       var leftRightWidth = Math.round((size.x-this._width)/2);
-      this.nwPosition = new L.Point(leftRightWidth + this.offset.x, topBottomHeight + this.offset.y);
+      this.nwPosition = new L.Point(leftRightWidth /*this.offset.x*/, topBottomHeight /*+ this.offset.y*/);
       this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
     },
 
@@ -572,15 +584,7 @@ L.PageComposer = L.Class.extend({
         self.refs.locked = mapLockStatus.checked;
         if (self.refs.locked === false){
           
-          self.map.fitBounds([
-            [self.bounds.getNorthWest().lat + 1,
-            self.bounds.getNorthWest().lng - 1],[
-            self.bounds.getSouthEast().lat - 1,
-            self.bounds.getSouthEast().lng + 1]
-          ]);
-          // //self._calculateInitialPositions();
-          self._getBoundsPinToNorthWest
-          self.refs.zoomScale = 1 / self.map.getZoomScale(self.refs.startZoom);
+          self.map.fitBounds(self.bounds, {animation: false});
           self._render();
           self.fire("change");
           
@@ -589,17 +593,6 @@ L.PageComposer = L.Class.extend({
         }
 
       });
-    },
-
-    _calculateInitialPositions: function() {
-      var size = this.map.getSize();
-
-      var topBottomHeight = Math.round((size.y-this._height)/2);
-      var leftRightWidth = Math.round((size.x-this._width)/2);
-      this.centerPosition = new L.Point(this.map.getCenter());
-      this.nwPosition = new L.Point(leftRightWidth + this.offset.x, topBottomHeight + this.offset.y);
-      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
-      this.bounds = this.getBounds();
     },
 
     _updatePageGridPosition: function(left, top, width, height) {
