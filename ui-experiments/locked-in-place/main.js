@@ -206,6 +206,53 @@ L.PageComposer = L.Class.extend({
       }
     },
 
+    _createPageModifiers: function() {
+      var gridModifiers = document.getElementsByClassName("grid-modifier");
+      this._addRow = gridModifiers[1];
+      this._minusRow = gridModifiers[2];
+      this._addCol = gridModifiers[5];
+      this._subCol = gridModifiers[3];
+
+      L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
+      L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
+      L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
+      L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
+    },
+
+    _createContainerModifiers: function() {
+      // scale button
+      this._setScaleHandler(L.DomUtil.create("div", "leaflet-areaselect-handle scale-handle", this._container), -1, -1);
+    },
+    
+    _createElements: function() {
+        if (!!this._container)
+          return;
+
+        // base elements
+        this._container =   L.DomUtil.create("div", "leaflet-areaselect-container", this.map._controlContainer);
+        this._grid =        L.DomUtil.create("div", "leaflet-areaselect-grid", this._container);
+
+        this._calculateInitialPositions();
+        this._setDimensions();
+        this._createPages();
+        // add scale btn
+        this._createContainerModifiers();
+
+        // add event listeners to menu elements
+        this._createPageModifiers();
+        this._onSearch();
+        this._onMapLock();
+        this._onReorientation();
+        this._onPaperSizeChange();
+
+        this.map.on("move",     this._onMapMovement, this);
+        this.map.on("moveend",  this._onMapMovement, this);
+        this.map.on("viewreset",  this._onMapReset, this);
+        this.map.on("resize",   this._onMapReset, this);
+
+        this.fire("change");
+    },
+
     _getBoundsPinToCenter: function() {
       var size = this.map.getSize();
       var topRight = new L.Point();
@@ -292,11 +339,6 @@ L.PageComposer = L.Class.extend({
         var width = this.dimensions.width / this.refs.prevCols;
         this.dimensions.width = width * this.refs.cols;
 
-        if (this.refs.locked === false && this.dimensions.width > size.x - 40) {
-          this.dimensions.width = size.x - 40;
-          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
-        }
-
         this.refs.prevCols = this.refs.cols;
         count[1].textContent = this.refs.cols;
       }
@@ -305,21 +347,24 @@ L.PageComposer = L.Class.extend({
         var height = this.dimensions.height / this.refs.prevRows;
         this.dimensions.height = height * this.refs.rows;
 
-        if (this.refs.locked === false && this.dimensions.height > size.y - 40) {
-          this.dimensions.height = size.y - 40;
-          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-        }
-
         this.refs.prevRows = this.refs.rows;
         count[0].textContent = this.refs.rows;
       }
 
-      // re-calc bounds
-      if (this.refs.locked === true){
-        this.bounds = this._getBoundsPinToNorthWest();
-      } else {
+      if (this.refs.locked === false){
+        if (this.dimensions.height > size.y - 40) {
+          this.dimensions.height = size.y - 40;
+          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+        } else if (this.dimensions.width > size.x - 40) {
+          this.dimensions.width = size.x - 40;
+          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        }
         this.bounds = this._getBoundsPinToCenter();
+
+      } else {
+        this.bounds = this._getBoundsPinToNorthWest();
       }
+      
       this._render();
     },
 
@@ -360,57 +405,7 @@ L.PageComposer = L.Class.extend({
       this._render();
     },
 
-    //adds +/-
-    _createPageModifiers: function() {
-      var gridModifiers = document.getElementsByClassName("grid-modifier");
-      this._addRow = gridModifiers[1];
-      this._minusRow = gridModifiers[2];
-      this._addCol = gridModifiers[5];
-      this._subCol = gridModifiers[3];
-
-      L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
-      L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
-      L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
-      L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
-    },
     
-    _createElements: function() {
-        if (!!this._container)
-          return;
-
-        // base elements
-        this._container =   L.DomUtil.create("div", "leaflet-areaselect-container", this.map._controlContainer);
-        this._grid =        L.DomUtil.create("div", "leaflet-areaselect-grid", this._container);
-
-        // add/remove page btns
-        this._createPageModifiers();
-
-        // add scale & drag btns
-        this._createContainerModifiers();
-
-        //
-        this._calculateInitialPositions();
-        this._setDimensions();
-        this._createPages();
-        this._onSearch();
-        this._onMapLock();
-        this._onReorientation();
-        this._onPaperSizeChange();
-
-        //maybe
-        this.map.on("move",     this._onMapMovement, this);
-        this.map.on("moveend",  this._onMapMovement, this);
-        this.map.on("viewreset",  this._onMapReset, this);
-        this.map.on("resize",   this._onMapReset, this);
-
-        this.fire("change");
-    },
-
-    // Adds the scale button
-    _createContainerModifiers: function() {
-      // scale button
-      this._setScaleHandler(L.DomUtil.create("div", "leaflet-areaselect-handle scale-handle", this._container), -1, -1);
-    },
 
     _onMapMovement: function(){
       if (this.refs.locked === true){
@@ -530,7 +525,8 @@ L.PageComposer = L.Class.extend({
 
           self.refs.locked = false;
           document.getElementById('map-lock-box').childNodes[1].checked = false;
-          self.bounds = self.getBounds();
+          self._updateToolDimensions();
+          self.bounds = self._getBoundsPinToCenter();
           self._render();
           self.fire("change");
           
@@ -611,8 +607,6 @@ L.PageComposer = L.Class.extend({
     },
     
     _render: function() {
-       
-
       var size = this.map.getSize();
 
       if (!this.nwPosition) {
@@ -636,8 +630,6 @@ L.PageComposer = L.Class.extend({
       this._updateGridElement(this._scaleHandle, {left:nw.x + width, top:nw.y + height});
 
     },
-
-
 });
 
 
