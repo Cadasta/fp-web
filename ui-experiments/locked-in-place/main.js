@@ -144,49 +144,6 @@ L.PageComposer = L.Class.extend({
       this.dimensions.cellHeight = this.dimensions.height / this.refs.rows;
     },
 
-    _getBoundsPinToCenter: function() {
-      var size = this.map.getSize();
-      var topRight = new L.Point();
-      var bottomLeft = new L.Point();
-
-      bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
-      topRight.y = Math.round((size.y - this.dimensions.height) / 2);
-      topRight.x = size.x - bottomLeft.x;
-      bottomLeft.y = size.y - topRight.y;
-
-      var sw = this.map.containerPointToLatLng(bottomLeft);
-      var ne = this.map.containerPointToLatLng(topRight);
-
-      return new L.LatLngBounds(sw, ne);
-    },
-
-    _getBoundsPinToNorthWest: function() {
-      var size = this.map.getSize();
-      var topRight = new L.Point();
-      var bottomLeft = new L.Point();
-
-      var nwPoint = this.map.latLngToContainerPoint(this.nwLocation);
-
-      topRight.y = nwPoint.y;
-      bottomLeft.y = nwPoint.y + this.dimensions.height;
-      bottomLeft.x = nwPoint.x;
-      topRight.x = nwPoint.x + this.dimensions.width;
-
-      var sw = this.map.containerPointToLatLng(bottomLeft);
-      var ne = this.map.containerPointToLatLng(topRight);
-
-      return new L.LatLngBounds(sw, ne);
-    },
-
-    _updateNWPosition: function() {
-      var size = this.map.getSize();
-
-      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
-      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
-      this.nwPosition = new L.Point(leftRightWidth /*this.offset.x*/, topBottomHeight /*+ this.offset.y*/);
-      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
-    },
-
     _makePageElement: function(x,y,w,h) {
       var div = document.createElement('div');
       div.className = "page";
@@ -249,6 +206,50 @@ L.PageComposer = L.Class.extend({
       }
     },
 
+    _getBoundsPinToCenter: function() {
+      var size = this.map.getSize();
+      var topRight = new L.Point();
+      var bottomLeft = new L.Point();
+
+      bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
+      topRight.y = Math.round((size.y - this.dimensions.height) / 2);
+      topRight.x = size.x - bottomLeft.x;
+      bottomLeft.y = size.y - topRight.y;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      this._updateNWPosition();
+      return new L.LatLngBounds(sw, ne);
+    },
+
+    _getBoundsPinToNorthWest: function() {
+      var size = this.map.getSize();
+      var topRight = new L.Point();
+      var bottomLeft = new L.Point();
+
+      var nwPoint = this.map.latLngToContainerPoint(this.nwLocation);
+
+      topRight.y = nwPoint.y;
+      bottomLeft.y = nwPoint.y + this.dimensions.height;
+      bottomLeft.x = nwPoint.x;
+      topRight.x = nwPoint.x + this.dimensions.width;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      return new L.LatLngBounds(sw, ne);
+    },
+
+    _updateNWPosition: function() {
+      var size = this.map.getSize();
+
+      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
+      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
+      this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
+      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
+    },
+
     _onAddRow: function(evt) {
       evt.stopPropagation();
       this.refs.rows++;
@@ -291,7 +292,7 @@ L.PageComposer = L.Class.extend({
         var width = this.dimensions.width / this.refs.prevCols;
         this.dimensions.width = width * this.refs.cols;
 
-        if (this.dimensions.width > size.x - 40) {
+        if (this.refs.locked === false && this.dimensions.width > size.x - 40) {
           this.dimensions.width = size.x - 40;
           this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
         }
@@ -304,7 +305,7 @@ L.PageComposer = L.Class.extend({
         var height = this.dimensions.height / this.refs.prevRows;
         this.dimensions.height = height * this.refs.rows;
 
-        if (this.dimensions.height > size.y - 40) {
+        if (this.refs.locked === false && this.dimensions.height > size.y - 40) {
           this.dimensions.height = size.y - 40;
           this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
         }
@@ -317,7 +318,6 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
-        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -332,7 +332,6 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
-        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -356,7 +355,6 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
-        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._render();
@@ -419,7 +417,6 @@ L.PageComposer = L.Class.extend({
         this._render();
         this.fire("change");
       } else {
-        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
     },
@@ -480,7 +477,6 @@ L.PageComposer = L.Class.extend({
       if (this.refs.locked === true){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
-        this._updateNWPosition();
         this.bounds = this._getBoundsPinToCenter();
       }
       this._setDimensions();
