@@ -33,7 +33,8 @@ L.PageComposer = L.Class.extend({
       cols: 2,
       prevRows: 1,
       prevCols: 2,
-      locked: false
+      locked: false,
+      was_locked: false
     },
 
     initialize: function(options) {
@@ -346,7 +347,7 @@ L.PageComposer = L.Class.extend({
       count[1].textContent = this.refs.cols;
       count[0].textContent = this.refs.rows;
 
-      if (this.refs.locked === false){
+      if (!this.refs.locked){
         if (this.dimensions.height > size.y - 40) {
           this.dimensions.height = size.y - 40;
           this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
@@ -370,7 +371,7 @@ L.PageComposer = L.Class.extend({
       this.dimensions.width = this.dimensions.cellHeight * this.refs.cols;
 
       // re-calc bounds
-      if (this.refs.locked === true){
+      if (this.refs.locked){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
         this.bounds = this._getBoundsPinToCenter();
@@ -393,7 +394,7 @@ L.PageComposer = L.Class.extend({
       this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
 
       // re-calc bounds
-      if (this.refs.locked === true){
+      if (this.refs.locked){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
         this.bounds = this._getBoundsPinToCenter();
@@ -404,7 +405,7 @@ L.PageComposer = L.Class.extend({
     
 
     _onMapMovement: function(){
-      if (this.refs.locked === true){
+      if (this.refs.locked){
         this._render();
         this.fire("change");
       } else {
@@ -414,9 +415,11 @@ L.PageComposer = L.Class.extend({
 
     //affected zoom?
     _onMapReset: function() {
-      if (this.refs.locked === true) {
+      console.log(this.refs.locked, this.refs.was_locked)
+      if (this.refs.locked || this.refs.was_locked) {
         this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
         this._render();
+        this.refs.was_locked = false;
       }
       this.fire("change");
     },
@@ -467,7 +470,7 @@ L.PageComposer = L.Class.extend({
       this._scaleProps.curX = event.originalEvent.pageX;
       this._scaleProps.curY = event.originalEvent.pageY;
 
-      if (this.refs.locked === true){
+      if (this.refs.locked){
         this.bounds = this._getBoundsPinToNorthWest();
       } else {
         this.bounds = this._getBoundsPinToCenter();
@@ -521,7 +524,7 @@ L.PageComposer = L.Class.extend({
             [data[0].boundingbox[1],data[0].boundingbox[3]]
           ]);
 
-          if (self.refs.locked === true){
+          if (self.refs.locked){
             self.refs.locked = false;
             document.getElementById('map-lock-box').childNodes[1].checked = false;
             self._render();
@@ -579,16 +582,15 @@ L.PageComposer = L.Class.extend({
       var self = this;
 
       L.DomEvent.addListener(mapLockStatus, "change", function(){
+        self.refs.was_locked = self.refs.locked ? true : false;
         self.refs.locked = mapLockStatus.checked;
-        if (self.refs.locked === false){
+
+        if (!self.refs.locked){
           self.map.fitBounds(self.bounds, {animation: false});
 
-          //self.refs.zoomScale = 1 / self.map.getZoomScale(self.refs.startZoom);
-          //self.bounds = self._getBoundsPinToCenter();
           self._render();
           self.fire("change");
         }
-
       });
     },
 
