@@ -335,27 +335,23 @@ L.PageComposer = L.Class.extend({
       var size = this.map.getSize();
       var count = document.getElementsByClassName("number");
 
-      if (this.refs.cols !== this.refs.prevCols) {
-        var width = this.dimensions.width / this.refs.prevCols;
-        this.dimensions.width = width * this.refs.cols;
+      var width = this.dimensions.width / this.refs.prevCols;
+      var height = this.dimensions.height / this.refs.prevRows;
 
-        this.refs.prevCols = this.refs.cols;
-        count[1].textContent = this.refs.cols;
-      }
+      this.dimensions.width = width * this.refs.cols;
+      this.dimensions.height = height * this.refs.rows;
 
-      if (this.refs.rows !== this.refs.prevRows) {
-        var height = this.dimensions.height / this.refs.prevRows;
-        this.dimensions.height = height * this.refs.rows;
-
-        this.refs.prevRows = this.refs.rows;
-        count[0].textContent = this.refs.rows;
-      }
+      this.refs.prevCols = this.refs.cols;
+      this.refs.prevRows = this.refs.rows;
+      count[1].textContent = this.refs.cols;
+      count[0].textContent = this.refs.rows;
 
       if (this.refs.locked === false){
         if (this.dimensions.height > size.y - 40) {
           this.dimensions.height = size.y - 40;
           this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-        } else if (this.dimensions.width > size.x - 40) {
+        }
+        if (this.dimensions.width > size.x - 40) {
           this.dimensions.width = size.x - 40;
           this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
         }
@@ -364,7 +360,7 @@ L.PageComposer = L.Class.extend({
       } else {
         this.bounds = this._getBoundsPinToNorthWest();
       }
-      
+
       this._render();
     },
 
@@ -418,8 +414,10 @@ L.PageComposer = L.Class.extend({
 
     //affected zoom?
     _onMapReset: function() {
-      this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
-      this._render();
+      if (this.refs.locked === true) {
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+        this._render();
+      }
       this.fire("change");
     },
 
@@ -523,11 +521,13 @@ L.PageComposer = L.Class.extend({
             [data[0].boundingbox[1],data[0].boundingbox[3]]
           ]);
 
-          self.refs.locked = false;
-          document.getElementById('map-lock-box').childNodes[1].checked = false;
+          if (self.refs.locked === true){
+            self.refs.locked = false;
+            document.getElementById('map-lock-box').childNodes[1].checked = false;
+            self._render();
+          }
+          
           self._updateToolDimensions();
-          self.bounds = self._getBoundsPinToCenter();
-          self._render();
           self.fire("change");
           
         }
@@ -581,8 +581,10 @@ L.PageComposer = L.Class.extend({
       L.DomEvent.addListener(mapLockStatus, "change", function(){
         self.refs.locked = mapLockStatus.checked;
         if (self.refs.locked === false){
-          
           self.map.fitBounds(self.bounds, {animation: false});
+
+          //self.refs.zoomScale = 1 / self.map.getZoomScale(self.refs.startZoom);
+          //self.bounds = self._getBoundsPinToCenter();
           self._render();
           self.fire("change");
         }
