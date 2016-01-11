@@ -64,7 +64,6 @@ L.PageComposer = L.Class.extend({
       this._container.parentNode.removeChild(this._container);
     },
     
-    //all the same
     getBounds: function() {
         var size = this.map.getSize();
         var topRight = new L.Point();
@@ -79,6 +78,79 @@ L.PageComposer = L.Class.extend({
         var ne = this.map.containerPointToLatLng(topRight);
 
         return new L.LatLngBounds(sw, ne);
+    },
+
+    _getBoundsPinToCenter: function() {
+      var size = this.map.getSize();
+      var topRight = new L.Point();
+      var bottomLeft = new L.Point();
+
+      bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
+      topRight.y = Math.round((size.y - this.dimensions.height) / 2);
+      topRight.x = size.x - bottomLeft.x;
+      bottomLeft.y = size.y - topRight.y;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      this._updateNWPosition();
+      return new L.LatLngBounds(sw, ne);
+    },
+
+    _getBoundsPinToNorthWest: function() {
+      var size = this.map.getSize();
+      var topRight = new L.Point();
+      var bottomLeft = new L.Point();
+
+      var nwPoint = this.map.latLngToContainerPoint(this.nwLocation);
+
+      topRight.y = nwPoint.y;
+      bottomLeft.y = nwPoint.y + this.dimensions.height;
+      bottomLeft.x = nwPoint.x;
+      topRight.x = nwPoint.x + this.dimensions.width;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      return new L.LatLngBounds(sw, ne);
+    },
+
+    _updateNWPosition: function() {
+      var size = this.map.getSize();
+
+      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
+      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
+      this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
+      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
+    },
+
+    _updateLocation: function(location){
+      var self = this;
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4 && xhr.status === 200){
+          var latlngPoints = JSON.parse(xhr.responseText)[0].boundingbox;
+
+          self.map.fitBounds([
+            [latlngPoints[0],latlngPoints[2]],
+            [latlngPoints[1],latlngPoints[3]]
+          ]);
+
+          if (self.refs.locked){
+            //uncheck the "pin to nw corner" box
+            document.getElementById('map-lock-box').childNodes[1].checked = false;
+
+            self.refs.locked = false;
+            self._render();
+          }
+          
+          self._updateToolDimensions();
+          self.fire("change");
+        }
+      };
+
+      xhr.open("GET", "http://nominatim.openstreetmap.org/search/?format=json&limit=1&q="+location, true);
+      xhr.send(null);
     },
 
     _calculateInitialPositions: function() {
@@ -101,7 +173,7 @@ L.PageComposer = L.Class.extend({
         this.refs.pageOrientation = x;
         this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][x];
 
-        this._updateAspectRatio();
+        this._updateOrientation();
 
         // if the flop is outside the map bounds, contain it.
         var mapBds = this.map.getBounds();
@@ -115,12 +187,26 @@ L.PageComposer = L.Class.extend({
       return this;
     },
 
+    _updateOrientation: function(){
+      //switch from landscape to portrait
+      this.dimensions.height = this.dimensions.cellWidth * this.refs.rows;
+      this.dimensions.width = this.dimensions.cellHeight * this.refs.cols;
+
+      // re-calc bounds
+      if (this.refs.locked){
+        this.bounds = this._getBoundsPinToNorthWest();
+      } else {
+        this.bounds = this._getBoundsPinToCenter();
+      }
+      this._render();
+    },
+
     _setPaperSize: function(x) {
       if (this.refs.paper_aspect_ratios[x] || x !== this.refs.paperSize) {
         this.refs.paperSize = x;
         this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
 
-        this._updateScale();
+        this._updatePaperSize();
 
         // if the new size is outside the map bounds, contain it.
         var mapBds = this.map.getBounds();
@@ -133,6 +219,29 @@ L.PageComposer = L.Class.extend({
       return this;
     },
 
+    _updatePaperSize: function(){
+      //switch between letter/a3/a4
+      var scale = this.refs.paper_aspect_ratios[this.refs.paperSize].scale;
+
+      if (scale > this.refs.toolScale) {
+        this.dimensions.width = this.dimensions.width * scale;
+        this.refs.toolScale = scale;
+      } else if (scale < this.refs.toolScale) {
+        this.dimensions.width = this.dimensions.width / this.refs.toolScale;
+        this.refs.toolScale = scale;
+      }
+
+      this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+
+      // re-calc bounds
+      if (this.refs.locked){
+        this.bounds = this._getBoundsPinToNorthWest();
+      } else {
+        this.bounds = this._getBoundsPinToCenter();
+      }
+      this._render();
+    },
+
     _setDimensions: function() {
       this.dimensions.nw = this.map.latLngToContainerPoint(this.bounds.getNorthWest());
       this.dimensions.ne = this.map.latLngToContainerPoint(this.bounds.getNorthEast());
@@ -143,6 +252,39 @@ L.PageComposer = L.Class.extend({
 
       this.dimensions.cellWidth = this.dimensions.width / this.refs.cols;
       this.dimensions.cellHeight = this.dimensions.height / this.refs.rows;
+    },
+
+    _updateToolDimensions: function() {
+      var size = this.map.getSize();
+      var count = document.getElementsByClassName("number");
+
+      var width = this.dimensions.width / this.refs.prevCols;
+      var height = this.dimensions.height / this.refs.prevRows;
+
+      this.dimensions.width = width * this.refs.cols;
+      this.dimensions.height = height * this.refs.rows;
+
+      this.refs.prevCols = this.refs.cols;
+      this.refs.prevRows = this.refs.rows;
+      count[1].textContent = this.refs.cols;
+      count[0].textContent = this.refs.rows;
+
+      if (!this.refs.locked){
+        if (this.dimensions.height > size.y - 40) {
+          this.dimensions.height = size.y - 40;
+          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+        }
+        if (this.dimensions.width > size.x - 40) {
+          this.dimensions.width = size.x - 40;
+          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        }
+        this.bounds = this._getBoundsPinToCenter();
+
+      } else {
+        this.bounds = this._getBoundsPinToNorthWest();
+      }
+
+      this._render();
     },
 
     _makePageElement: function(x,y,w,h) {
@@ -179,7 +321,7 @@ L.PageComposer = L.Class.extend({
       var spacingX = 100 / cols,
           spacingY = 100 / rows;
 
-      // cols
+      // creates cols and rows
       for (var i = 0;i< cols;i++) {
         for (var r = 0;r< rows;r++) {
           var elm = gridElm.appendChild( this._makePageElement(spacingX * i, spacingY * r, spacingX, spacingY ) );
@@ -230,8 +372,8 @@ L.PageComposer = L.Class.extend({
           return;
 
         // base elements
-        this._container =   L.DomUtil.create("div", "leaflet-areaselect-container", this.map._controlContainer);
-        this._grid =        L.DomUtil.create("div", "leaflet-areaselect-grid", this._container);
+        this._container = L.DomUtil.create("div", "leaflet-areaselect-container", this.map._controlContainer);
+        this._grid = L.DomUtil.create("div", "leaflet-areaselect-grid", this._container);
 
         this._calculateInitialPositions();
         this._setDimensions();
@@ -252,50 +394,6 @@ L.PageComposer = L.Class.extend({
         this.map.on("resize",   this._onMapReset, this);
 
         this.fire("change");
-    },
-
-    _getBoundsPinToCenter: function() {
-      var size = this.map.getSize();
-      var topRight = new L.Point();
-      var bottomLeft = new L.Point();
-
-      bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
-      topRight.y = Math.round((size.y - this.dimensions.height) / 2);
-      topRight.x = size.x - bottomLeft.x;
-      bottomLeft.y = size.y - topRight.y;
-
-      var sw = this.map.containerPointToLatLng(bottomLeft);
-      var ne = this.map.containerPointToLatLng(topRight);
-
-      this._updateNWPosition();
-      return new L.LatLngBounds(sw, ne);
-    },
-
-    _getBoundsPinToNorthWest: function() {
-      var size = this.map.getSize();
-      var topRight = new L.Point();
-      var bottomLeft = new L.Point();
-
-      var nwPoint = this.map.latLngToContainerPoint(this.nwLocation);
-
-      topRight.y = nwPoint.y;
-      bottomLeft.y = nwPoint.y + this.dimensions.height;
-      bottomLeft.x = nwPoint.x;
-      topRight.x = nwPoint.x + this.dimensions.width;
-
-      var sw = this.map.containerPointToLatLng(bottomLeft);
-      var ne = this.map.containerPointToLatLng(topRight);
-
-      return new L.LatLngBounds(sw, ne);
-    },
-
-    _updateNWPosition: function() {
-      var size = this.map.getSize();
-
-      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
-      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
-      this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
-      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
     },
 
     _onAddRow: function(evt) {
@@ -332,77 +430,21 @@ L.PageComposer = L.Class.extend({
       this.fire("change");
     },
 
-    _updateToolDimensions: function() {
-      var size = this.map.getSize();
-      var count = document.getElementsByClassName("number");
-
-      var width = this.dimensions.width / this.refs.prevCols;
-      var height = this.dimensions.height / this.refs.prevRows;
-
-      this.dimensions.width = width * this.refs.cols;
-      this.dimensions.height = height * this.refs.rows;
-
-      this.refs.prevCols = this.refs.cols;
-      this.refs.prevRows = this.refs.rows;
-      count[1].textContent = this.refs.cols;
-      count[0].textContent = this.refs.rows;
-
-      if (!this.refs.locked){
-        if (this.dimensions.height > size.y - 40) {
-          this.dimensions.height = size.y - 40;
-          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-        }
-        if (this.dimensions.width > size.x - 40) {
-          this.dimensions.width = size.x - 40;
-          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
-        }
-        this.bounds = this._getBoundsPinToCenter();
-
-      } else {
-        this.bounds = this._getBoundsPinToNorthWest();
-      }
-
-      this._render();
+    _updatePageGridPosition: function(left, top, width, height) {
+      this._grid.style.top = top + "px";
+      this._grid.style.left = left + "px";
+      this._grid.style.width = width + "px";
+      this._grid.style.height = height + "px";
     },
 
-    _updateAspectRatio: function(){
-      //switch from landscape to portrait
-      this.dimensions.height = this.dimensions.cellWidth * this.refs.rows;
-      this.dimensions.width = this.dimensions.cellHeight * this.refs.cols;
-
-      // re-calc bounds
-      if (this.refs.locked){
-        this.bounds = this._getBoundsPinToNorthWest();
-      } else {
-        this.bounds = this._getBoundsPinToCenter();
-      }
-      this._render();
+    _updateGridElement: function(element, dimension) {
+        element.style.width = dimension.width + "px";
+        element.style.height = dimension.height + "px";
+        element.style.top = dimension.top + "px";
+        element.style.left = dimension.left + "px";
+        element.style.bottom = dimension.bottom + "px";
+        element.style.right = dimension.right + "px";
     },
-
-    _updateScale: function(){
-      //switch between letter/a3/a4
-      var scale = this.refs.paper_aspect_ratios[this.refs.paperSize].scale;
-
-      if (scale > this.refs.toolScale) {
-        this.dimensions.width = this.dimensions.width * scale;
-        this.refs.toolScale = scale;
-      } else if (scale < this.refs.toolScale) {
-        this.dimensions.width = this.dimensions.width / this.refs.toolScale;
-        this.refs.toolScale = scale;
-      }
-
-      this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
-
-      // re-calc bounds
-      if (this.refs.locked){
-        this.bounds = this._getBoundsPinToNorthWest();
-      } else {
-        this.bounds = this._getBoundsPinToCenter();
-      }
-      this._render();
-    },
-
-    
 
     _onMapMovement: function(){
       if (this.refs.locked){
@@ -413,15 +455,21 @@ L.PageComposer = L.Class.extend({
       }
     },
 
-    //affected zoom?
     _onMapReset: function() {
-      console.log(this.refs.locked, this.refs.was_locked)
       if (this.refs.locked || this.refs.was_locked) {
         this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
         this._render();
         this.refs.was_locked = false;
       }
       this.fire("change");
+    },
+
+    _onMapResize: function() {
+        this._render();
+    },
+
+    _onMapChange: function() {
+        this.fire("change");
     },
 
     // Handler for when the tool is scaled
@@ -513,32 +561,6 @@ L.PageComposer = L.Class.extend({
       this.fire("change");
     },
 
-    _updateLocation: function(location){
-      var self = this;
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function(){
-        if (xhr.readyState === 4 && xhr.status === 200){
-          var data = JSON.parse(xhr.responseText);
-          self.map.fitBounds([
-            [data[0].boundingbox[0],data[0].boundingbox[2]],
-            [data[0].boundingbox[1],data[0].boundingbox[3]]
-          ]);
-
-          if (self.refs.locked){
-            self.refs.locked = false;
-            document.getElementById('map-lock-box').childNodes[1].checked = false;
-            self._render();
-          }
-          
-          self._updateToolDimensions();
-          self.fire("change");
-          
-        }
-      };
-      xhr.open("GET", "http://nominatim.openstreetmap.org/search/?format=json&limit=1&q="+location, true);
-      xhr.send(null);
-    },
-
     _onSearch: function(){
       var form = document.forms[0];
       var self = this;
@@ -568,14 +590,6 @@ L.PageComposer = L.Class.extend({
         self._setPaperSize(selected[selected.selectedIndex].value);
       });
     },
-    
-    _onMapResize: function() {
-        this._render();
-    },
-    
-    _onMapChange: function() {
-        this.fire("change");
-    },
 
     _onMapLock: function(){
       var mapLockStatus = document.getElementById('map-lock-box').childNodes[1];
@@ -592,22 +606,6 @@ L.PageComposer = L.Class.extend({
           self.fire("change");
         }
       });
-    },
-
-    _updatePageGridPosition: function(left, top, width, height) {
-      this._grid.style.top = top + "px";
-      this._grid.style.left = left + "px";
-      this._grid.style.width = width + "px";
-      this._grid.style.height = height + "px";
-    },
-
-    _updateGridElement: function(element, dimension) {
-        element.style.width = dimension.width + "px";
-        element.style.height = dimension.height + "px";
-        element.style.top = dimension.top + "px";
-        element.style.left = dimension.left + "px";
-        element.style.bottom = dimension.bottom + "px";
-        element.style.right = dimension.right + "px";
     },
     
     _render: function() {
@@ -632,7 +630,6 @@ L.PageComposer = L.Class.extend({
 
       // position handles
       this._updateGridElement(this._scaleHandle, {left:nw.x + width, top:nw.y + height});
-
     },
 });
 
@@ -643,36 +640,15 @@ var map = L.map('map', {
     scrollWheelZoom: false
 });
 
-var southWest = L.latLng(40.712, -74.227),
-    northEast = L.latLng(40.774, -74.125),
-    bounds = L.latLngBounds(southWest, northEast);
-
-map.fitBounds([[33.004106,
-      -94.617812],
-      [36.4996,
-      -89.6422485]
-    ]);
-
 L.pageComposer = function(options) {
     return new L.PageComposer(options);
 };
 
 L.pageComposer().addTo(map);
 
-//L.pageComposer()._onSearch();
-
-
-//
-
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox.streets',
     accessToken: 'pk.eyJ1IjoibGluempheCIsImEiOiJjaWh6Y2hnZGIwNDkzdGxtMXJvMHVidzByIn0.Q1vAOjJ2H2pmJsxap7c2bQ'
-    }).addTo(map); 
-
-
-
-
-
-
+    }).addTo(map);
