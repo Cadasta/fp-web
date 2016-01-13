@@ -102,5 +102,5 @@ on the "See one, do one, teach one" basis that doctors do...)
 2. routes are a bit funny b/c we're using an explicite route with 'compose'. 
    'show' is kind of right, but not quite.
 3. gems: mapbox-rails
-4. <script> at the bottom of show.html.erb should be moved into a seperate
+4. `<script>` at the bottom of show.html.erb should be moved into a seperate
    js file or cleaned up.
