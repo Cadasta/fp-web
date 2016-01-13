@@ -4,39 +4,15 @@ require "json"
 require "geo"
 
 class ComposeController < ApplicationController
-  include Wicked::Wizard
-
+  layout "big_map"
+  
   # allow existing forms (w/o CSRF projection) to create canned atlases
   skip_before_filter :verify_authenticity_token, only: :create
-
-  steps :search, :select, :describe, :layout
 
   def show
     # create an atlas instance with whatever we know about it at this point
     # (which could very well be nothing)
     @atlas = Atlas.new(session[:atlas] || {})
-
-    case step
-    when :search
-      # we're starting our way through the wizard; clear out anything we know
-      session[:atlas] = nil unless params[:canned]
-    when :select
-      if params[:q]
-        # #select does double-duty and redirects to the center
-        begin
-          zoom, longitude, latitude = Placefinder.query(params[:q])
-        rescue Placefinder::PlaceNotFoundException => e
-          @error = true
-          @place = e.place
-
-          return render previous_step
-        end
-
-        return redirect_to wizard_path(:select, zoom: zoom, lat: latitude, lon: longitude)
-      end
-    end
-
-    render_wizard
   end
 
   def create
@@ -116,12 +92,12 @@ class ComposeController < ApplicationController
 
       # TODO: figure out how to calculate rows & columns
       # TODO: how to handle providers & zooms for pages ("features")
-      return redirect_to wizard_path(:search)
+#      return redirect_to wizard_path(:search)
     end
 
     # geojson file
     if params[:geojson_file]
-      return redirect_to wizard_path(:search)
+#      return redirect_to wizard_path(:search)
     end
 
     # convert params into a form that ActiveRecord likes (retaining old input
@@ -139,53 +115,9 @@ class ComposeController < ApplicationController
       user_id: current_user.try(:id)
     })
 
-    return redirect_to wizard_path(:select, zoom: zoom, lat: latitude, lon: longitude) if latitude && longitude
+#    return redirect_to wizard_path(:select, zoom: zoom, lat: latitude, lon: longitude) if latitude && longitude
 
-    redirect_to wizard_path(:search, canned: true)
-  end
-
-  def update
-    # initialize session storage of atlas attributes
-    session[:atlas] ||= {
-      user_id: current_user.try(:id)
-    }
-
-    @atlas = Atlas.new \
-      session[:atlas]
-        .merge(atlas_params)
-
-    # flip the orientation if the layout was set on this POST (hence
-    # atlas_params)
-    if atlas_params[:layout] == "half-page"
-      if @atlas.orientation == "landscape"
-        @atlas.orientation = "portrait"
-      else
-        @atlas.orientation = "landscape"
-      end
-    end
-
-    # for stepwise validation (not implemented due to reasonable defaults) see:
-    #   https://github.com/schneems/wicked/wiki/Building-Partial-Objects-Step-by-Step
-    if @atlas.valid?
-      case step
-      when :layout # final step
-        @atlas.save
-        @atlas.render!
-
-        # now that this atlas exists, clear out the session representation
-        session[:atlas] = nil
-
-        return redirect_to atlas_path(@atlas)
-      else
-        # update the session store
-        session[:atlas] = @atlas.attributes
-
-        # move on to the next step
-        return redirect_to next_wizard_path
-      end
-    end
-
-    render step
+#    redirect_to wizard_path(:search, canned: true)
   end
 
   private
@@ -196,10 +128,6 @@ class ComposeController < ApplicationController
       :title, :text, :private, # from describe
       :layout, :utm_grid, :redcross_overlay, :paper_size, # from layout
       :refreshed_from, :cloned_from
-  end
-
-  def finish_wizard_path
-    atlas_path(@atlas)
   end
 
   def point_extent(point, zoom, dimensions)

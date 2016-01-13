@@ -44,7 +44,6 @@ gem "rack-rewrite" # URL rewriting middleware
 gem "s3_direct_upload", git: 'https://github.com/Cadasta/s3_direct_upload'
 gem "mysql2", "~> 0.3.18"
 gem "workflow"
-gem "wicked" # wizard controllers
 gem "json"
 gem 'geo', git: 'https://github.com/ollie/geo-mercator.git'
 gem 'actionview-encoded_mail_to'

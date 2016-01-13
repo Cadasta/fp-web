@@ -94,3 +94,13 @@ programming session, depending on how incompetent we collectively are
 at Rails programming.  (I've done some, but not much, and I don't like
 Rails very much, but it's what's there for Field Papers.  We'll work
 on the "See one, do one, teach one" basis that doctors do...)
+
+
+## Things to clean
+
+1. big_map.css not compiling
+2. routes are a bit funny b/c we're using an explicite route with 'compose'. 
+   'show' is kind of right, but not quite.
+3. gems: mapbox-rails
+4. <script> at the bottom of show.html.erb should be moved into a seperate
+   js file or cleaned up.
