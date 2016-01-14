@@ -12,57 +12,54 @@
 <body>
 	<div id="container">
 		<div id="menu">
+
       <div class="field-papers-logo">
   		  <img src="/public/img/icon.png">
-      </div>
+      </div> <!-- field-papers-logo -->
 
-      <h3>Atlas Navigation</h3>
-			<form id="map-location-search">
-  			<label class="item item-input">
-  			  <i class="icon ion-search placeholder-icon"></i>
-  			  <input class="map-location-search-box" type="text" name="searchBox" placeholder="Jump to a location" value="">
-  			  <input class="map-location-search-button" type="submit" value="Search">
-  			</label>
-			</form>
+      <div class="atlas-location-and-name">
 
-      <div class="page-layout-label">Paper Size</div>
-      <form id="page-layout">
-        <select name="page-aspect-ratio">
-          <option value="landscape">Landscape</option>
-          <option value="portrait">Portrait</option>
-        </select>
+        <h2>Atlas Location & Information</h2>
 
-        <select name="page-scale">
-          <option value="letter">Letter</option>
-          <option value="a3">A3</option>
-          <option value="a4">A4</option>
-        </select>
-      </form>
+        <div class="atlas-search-field">
+          <form id="map-location-search">
+            <label class="item item-input">
+              <i class="icon ion-search placeholder-icon"></i>
+              <input id="searchTextField" class="map-location-search-box" type="text" name="searchBox" placeholder="Jump to a location" value="">
+              <input class="map-location-search-button" type="submit" value="Search">
+            </label>
+          </form> <!-- map-location-search -->
+        </div> <!-- atlast-search-field -->
 
-      <!-- Change this into up and down arrows -->
-      <div class="col-row-modifiers">
-          <div class="col-row-modifiers-label">Row</div>
-          
-        <div class="grid-modifier-group">
-          <div class="grid-modifier number">1</div>
-          <div class="grid-modifier-arrows">
-            <div class="grid-modifier plus">
-              <div class="up-arrow"></div>
-            </div>
-            <div class="grid-modifier minus">
-              <div class="down-arrow"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-row-modifiers">
-          <div class="col-row-modifiers-label">Column</div>
-        <div class="grid-modifier-group">
-    			<div class="grid-modifier minus">-</div><div class="grid-modifier number">2</div><div class="grid-modifier plus">+</div>
-        </div>
-    	</div>
+        <form id="printing-information">
+          <label class="title">Name your atlas<br />
+            <input type="text" value="" />
+          </label>
+
+          <br />
+          <label class="notes">Notes<br />
+            <textarea value="" cols="20" rows="5" wrap="hard" ></textarea>
+          </label>
+
+          <div class='include-notes'>
+            <fieldset>
+              <input type="checkbox" name="adv-grid" value="map-and-notes" /><label>Include notes below map on each page</label><br />
+            </fieldset>
+          </div> <!-- include-notes -->
+
+          <div class="private-map">
+            <fieldset>
+              <input type="checkbox" name="private" value="Private" />Private<br />
+            </fieldset>
+          </div> <!-- private-map -->
+        </form> <!-- printing-information -->
+
+      </div> <!-- atlas-location-and-name -->
+
+      <h2>Grid Layout</h2>
 
       <div class="basemap-selector-label">Basemap</div>
+
       <form id="basemap-selector">
         <select name="baselayer">
           <option value="openstreetmap">OpenStreetMap</option>
@@ -74,38 +71,76 @@
           <option value="mapbox-satellite">Mapbox Satellite</option>
           <option value="opencyclemap">OpenCycleMap</option>
         </select>
-      </form>
+      </form> <!-- basemap-selector -->
 
+      <div class="page-sizing-and-orientation">
 
-      <div class="atlas-information">
-        <h3>Atlas Information</h3>
-        <form id="printing-information">
-          <label class="title">Title <br />
-            <input type="text" placeholder="Name of the atlas" value="" />
-          </label>
-          <br />
-          <fieldset>
-              <input type="radio" name="notes" value="Map-Only" />Map Only<br />
-              <input type="radio" name="notes" value="Map-Notes" checked/>Map + Notes<br />
-          </fieldset>
-          <label class="notes">Notes<br />
-            <textarea placeholder="Notes to be included" value="" cols="20" rows="5" wrap="hard" ></textarea>
-          </label>
-          <fieldset>
-            <input type="checkbox" name="private" value="Private" />Private Map<br />
-            <input type="checkbox" name="adv-grid" value="UTMGrid" />UTM Grid<br />
-            <input type="checkbox" name="adv-grid" value="GADMOverlay" />GADM Overlay<br />
-          </fieldset>
-          <input type="submit" class="final-step" value="Download">
-        </form>
-      </div>
-    </div>
-		<div id="map" class="leaflet-pagelayout-container leaflet-fade-anim">
-		</div>
-	</div>
+        <form id="page-layout">
+          <div class="page-layout-group">
+            <label class="page-layout-label">Orientation</label>
+            <select name="page-aspect-ratio">
+              <option value="landscape">Landscape</option>
+              <option value="portrait">Portrait</option>
+            </select>
+          </div> <!-- page-layout-group -->
+
+          <div class="page-layout-group">
+            <label class="page-layout-label">Paper Size</label>
+            <select name="page-scale">
+              <option value="letter">Letter</option>
+              <option value="a3">A3</option>
+              <option value="a4">A4</option>
+            </select>
+          </div> <!-- page-layout-group -->
+        </form> <!-- page-layout -->
+      </div> <!-- page-sizing-and-orientation -->
+
+      <div class='col-row-modifiers'>
+
+        <div class="col-row-modifiers-group">
+
+          <div class="col-row-modifiers-label">Column</div>
+
+          <div class="grid-modifier-group">
+            <div class="grid-modifier minus">-</div>
+            <div class="grid-modifier number">2</div>
+            <div class="grid-modifier plus">+</div>
+          </div> <!-- grid-modifier-group -->
+
+        </div> <!-- col-row-modifier-group -->
+
+        <div class="col-row-modifiers-group">
+
+          <div class="col-row-modifiers-label">Row</div>
+
+          <div class="grid-modifier-group">
+      			<div class="grid-modifier minus">-</div>
+            <div class="grid-modifier number">1</div>
+            <div class="grid-modifier plus">+</div>
+          </div> <!-- grid-modifier-group -->
+
+      	</div> <!-- col-row-modifier-group -->
+
+      </div> <!-- col-row-modifiers -->
+
+      <h2>Add - ons</h2>
+
+      <div class='add-ons'>
+        <fieldset>
+          <input type="checkbox" name="adv-grid" value="UTMGrid" />UTM Grid<br />
+          <input type="checkbox" name="adv-grid" value="GADMOverlay" />GADM Overlay<br />
+        </fieldset>
+
+        <input type="submit" id="final-step" value="Download" />
+      </div> <!-- add-ons -->
+    </div><!-- menu -->
+
+	  <div id="map" class="leaflet-pagelayout-container leaflet-fade-anim"></div>
+	</div><!-- container -->
 
 	<script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 	<script src="main.js"></script>
 
 </body>

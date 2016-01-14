@@ -2,7 +2,7 @@ body {
   width: 100%;
   padding: 0;
   margin: 0;
-  font: 11px BlinkMacSystemFont;
+  font: 14px "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 form {
@@ -17,9 +17,6 @@ form {
   margin: 0;
   position: relative;
 }
-
-
-
 
 /***************
 SIDE MENU
@@ -36,7 +33,7 @@ SIDE MENU
   left: 0;
   z-index: 6;
 
-  width: 200px;
+  width: 250px;
   height: 100vh;
 
   margin: 0;
@@ -52,52 +49,51 @@ SIDE MENU
   margin-top: 10px;
 }
 
-#menu h3 {
+#menu h2 {
   padding-top: 5px;
-  border-top: 2px solid #eee;
-}
-
-#menu .map-location-search {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-  height: 25px;
+  border-bottom: 2px solid #666;
+  width: 95%;
+  font-size: 1.2rem;
+  letter-spacing: 0rem;
+  font-weight: 300;
+  text-transform: uppercase;
 }
 
 #menu input[type=text] {
   display: inline-block;
-  width: 55%;
+  width: 85%;
   padding: 5px;
   text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  color: #444;
+  margin-top: 10px;
+  margin-bottom: 30px;
+
+  -webkit-appearance: none;
+}
+
+#menu input[type=submit] {
+  display: inline-block;
+  width: 30%;
+  padding: 5px;
+  color: #555555;
+  text-align: center;
   font-size: 10px;
   font-weight: 600;
+  text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   background-color: transparent;
   border-radius: 4px;
   border: 1px solid #bbb;
   cursor: pointer;
-  color: #444;
-
-  -webkit-appearance: none;
-}
-
-#menu input[type=submit] {
-    display: inline-block;
-    width: 30%;
-    /*height: 25px;*/
-    padding: 5px;
-    color: #555555;
-    text-align: center;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    text-decoration: none;
-    white-space: nowrap;
-    background-color: transparent;
-    border-radius: 4px;
-    border: 1px solid #bbb;
-    cursor: pointer;
 }
 
 #menu select {
@@ -109,80 +105,58 @@ SIDE MENU
   box-shadow: none;
 }
 
-#menu .col-row-modifiers {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-start;
-  align-items: left;
-  margin-bottom: 5px;
+#menu fieldset {
+  border: none;
+  padding: 0;
+  margin: 10px 0;
+  font-size: .9rem;
+  color: #666;
 }
 
-#menu .grid-modifier-group {
-  height: 20px;
-  width: 20%;
-  /*padding: 6px 10px;*/
-  font-size: 13px;
-  padding: 5px;
-  background-color: #fff;
-  border: 1px solid #d1d1d1;
-  border-radius: 4px;
-  box-shadow: none;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  flex-align: center;
-  cursor: pointer;
-  -webkit-user-select: none;  /* Chrome all / Safari all */
-  -moz-user-select: none;     /* Firefox all */
-  -ms-user-select: none;  
-  user-select: none;
-}
-
-#menu .number {
-  flex-grow: 1;
-  text-align: center;
-}
-
-
-#menu .grid-modifier-arrows .plus{
-  margin-bottom: 3px;
-}
-
-#menu .up-arrow {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: solid 8px black;
-}
-
-#menu .down-arrow {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: solid 8px black;
-}
+/****************
+MENU LABELS
+*****************/
 
 #menu .page-layout-label,
   #menu .col-row-modifiers-label,
   #menu .basemap-selector-label,
-  #menu .atlas-information .title,
-  #menu .atlas-information .notes {
-    font-weight: 600;
-  }
-
-#menu .basemap-selector-label {
-  margin-top: 10px;
+  #menu .atlas-location-and-name .title,
+  #menu .atlas-location-and-name .notes {
+    font-size: 0.9rem;
+    color: #444;
+    font-weight: 400;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
-#menu .atlas-information fieldset {
-  border: none;
-  padding: 0;
-  margin: 10px 0;
+/****************
+SEARCH
+*****************/
+
+#menu .atlas-search-field {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: stretch;
+  margin-bottom: 5px;
+  width: 100%;
+  margin-top: -15px;
 }
 
-#menu .atlas-information textarea {
+#menu .atlas-search-field .map-location-search-box {
+  width: 60%;
+  margin-bottom: 0px;
+}
+
+#menu .atlas-search-field .map-location-search-button {
+  width: 32%;
+  padding: 7px;
+}
+
+/**************
+NOTES + CHECKBOX
+***************/
+
+#menu .atlas-location-and-name textarea {
   display: inline-block;
   width: 86%;
   max-width: 86%;
@@ -195,11 +169,136 @@ SIDE MENU
   border-radius: 4px;
   border: 1px solid #bbb;
   color: #444;
+  margin-top: 10px;
+  margin-bottom: 10px;
 
   -webkit-appearance: none;
 }
 
-#menu .atlas-information .final-step {
+#printing-information label  {
+  font-size: 0.7rem;
+}
+
+#menu .private-map {
+  margin-top: 30px;
+}
+
+/**************
+BASEMAP OPTIONS
+***************/
+
+#menu .basemap-selector-label {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+#basemap-selector {
+  margin-bottom: 30px;
+}
+
+/**************
+PAGE ORIENTATION AND PAPER SIZE
+***************/
+
+#menu .page-sizing-and-orientation {
+  display: flex;
+  flex-flow: row;
+  flex-flow: no-wrap;
+  width: 100%;
+}
+
+#menu .page-sizing-and-orientation .page-layout-group {
+  width: 45%;
+  display: inline-block;
+}
+
+#menu .page-sizing-and-orientation .page-layout-group select{
+  margin-top: 10px;
+  margin-left: -2px;
+  width: 95%;
+  margin-bottom: 10px;
+}
+
+/**************
+ROW AND COL MODIFIERS
+***************/
+
+#menu .col-row-modifiers {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: left;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+#menu .col-row-modifiers-group {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: left;
+  width: 45%;
+}
+
+#menu .grid-modifier-group {
+  height: 20px;
+  width: 80%;
+  font-size: 13px;
+  margin-bottom: 30px;
+  /*padding: 5px;*/
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  flex-align: center;
+  cursor: pointer;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;  
+  user-select: none;
+  margin-top: -10px;
+}
+
+#menu .grid-modifier-group div {
+  background-color: #fff;
+  border: 1px solid #d1d1d1;
+  box-shadow: none;
+  width: 100%;
+  height: 20px;
+  padding-top: 2.5px;
+  margin: 0;
+  text-align: center;
+}
+
+#menu .grid-modifier-group .minus {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-right: none;
+  background-color: #eee;
+}
+
+#menu .grid-modifier-group .plus {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: none;
+  background-color: #eee;
+}
+
+#menu .number {
+  flex-grow: 1;
+  text-align: center;
+}
+
+/**************
+ADD-ONS
+***************/
+
+#menu .add-ons {
+  font-size: .8rem;
+  color: #666;
+}
+
+#menu #final-step {
   width: 70%;
   margin-left: 10%;
   font-size: 15px;
@@ -207,40 +306,20 @@ SIDE MENU
   color: #bbb;
   border-color: 1px solid #d1d1d1;
   margin-top: 10px;
+  margin-bottom: 30px;
 }
 
-#menu .atlas-information .final-step:hover {
+#menu #final-step:hover {
   color: #fff;
 }
 
-
-
-
-
-
-
-
-
 #map { 
   margin: 0;
-  margin-left: 200px;
+  margin-left: 250px;
   padding: 0;
   height: 100vh;
-  width: calc(100vw - 200px);
+  width: calc(100vw - 250px);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
   All styles under 'atlases' path
@@ -469,10 +548,8 @@ SIDE MENU
 .leaflet-areaselect-handle.scale-handle {
     background-color: white;
     border: solid 2px black;
-    width: 20px;
-    height: 20px;
-/*    margin-top: 23px;
-    margin-left: 23px;*/
+    width: 10px;
+    height: 10px;
 }
 
 
