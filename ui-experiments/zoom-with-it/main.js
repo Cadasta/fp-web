@@ -32,7 +32,8 @@ L.PageComposer = L.Class.extend({
       rows: 1,
       cols: 2,
       prevRows: 1,
-      prevCols: 2
+      prevCols: 2,
+      searching: false
     },
 
     initialize: function(options) {
@@ -100,8 +101,9 @@ L.PageComposer = L.Class.extend({
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function(){
         if (xhr.readyState === 4 && xhr.status === 200){
-          var latlngPoints = JSON.parse(xhr.responseText)[0].boundingbox;
+          self.refs.searching = true;
 
+          var latlngPoints = JSON.parse(xhr.responseText)[0].boundingbox;
           self.map.fitBounds([
             [latlngPoints[0],latlngPoints[2]],
             [latlngPoints[1],latlngPoints[3]]
@@ -209,10 +211,11 @@ L.PageComposer = L.Class.extend({
     
     _updateToolDimensions: function() {
       var size = this.map.getSize();
-    var count = document.getElementsByClassName("number");
+      var count = document.getElementsByClassName("number");
 
       var width = this.dimensions.width / this.refs.prevCols;
       var height = this.dimensions.height / this.refs.prevRows;
+
       this.dimensions.width = width * this.refs.cols;
       this.dimensions.height = height * this.refs.rows;
 
@@ -225,14 +228,13 @@ L.PageComposer = L.Class.extend({
         this.map.zoomOut();
         this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
       }
-
+      
       this.refs.prevCols = this.refs.cols;
       this.refs.prevRows = this.refs.rows;
-
+      
       count[1].textContent = this.refs.cols;
       count[0].textContent = this.refs.rows;
 
-      // re-calc bounds
       this.bounds = this._getBoundsPinToCenter();
       this._render();
     },
@@ -405,8 +407,13 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapReset: function() {
-      this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
-      this._render();
+      if (!this.refs.searching){
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+        this._render();
+      } else {
+        this.refs.searching = false;
+      }
+
       this.fire("change");
     },
 
@@ -436,6 +443,7 @@ L.PageComposer = L.Class.extend({
       };
 
       L.DomEvent.addListener(this._scaleHandle, "mousedown", this._onScaleMouseDown, this);
+      L.DomEvent.addListener(this._scaleHandle, "touchstart", this._onScaleTouchStart, this);
     },
 
     _onScaleMouseMove: function(event) {
@@ -498,6 +506,77 @@ L.PageComposer = L.Class.extend({
       L.DomEvent.removeListener(this.map, "mouseup", this._onScaleMouseUp);
       L.DomEvent.removeListener(this.map, "mousemove", this._onScaleMouseMove);
       L.DomEvent.addListener(this._scaleHandle, "mousedown", this._onScaleMouseDown, this);
+      L.DomUtil.enableTextSelection();
+      L.DomUtil.removeClass(this._container, 'scaling');
+      this.fire("change");
+    },
+
+    _onScaleTouchStart: function(event) {
+      //event.stopPropagation();
+      L.DomEvent.stopPropagation(event);
+      L.DomEvent.removeListener(this._scaleHandle, "touchstart", this._onScaleTouchStart);
+
+      var Touch = event['touches'][0];
+
+      this._scaleProps.curX = Math.ceil(Touch.screenX);
+      this._scaleProps.curY = Math.ceil(Touch.screenY);
+      this._scaleProps.ratio = this.dimensions.width / this.dimensions.height;
+
+      var size = this.map.getSize();
+      L.DomUtil.disableTextSelection();
+      L.DomUtil.addClass(this._container, 'scaling');
+
+      if (this.dimensions.width > this.dimensions.height){
+        var ratio = this.dimensions.width / this.dimensions.height;
+        var maxHeightY = (size.x / ratio) - 20;
+        this._scaleProps.maxHeight = maxHeightY;
+      } else {
+        this._scaleProps.maxHeight = size.y - 20;
+      }
+
+      L.DomEvent.addListener(this._scaleHandle, "touchmove", this._onScaleTouchMove, this);
+      L.DomEvent.addListener(this._scaleHandle, "touchend", this._onScaleTouchEnd, this);
+    },
+
+    _onScaleTouchMove: function(event) {
+      L.DomEvent.stopPropagation(event);
+      var width = this.dimensions.width,
+          height = this.dimensions.height;
+
+      var Touch = event['touches'][0];
+
+      if (this.options.keepAspectRatio) {
+        //var maxHeight = (height >= width ? size.y : size.y * (1/ratio) ) - 30;
+        height += (this._scaleProps.curY - Math.ceil(Touch.screenY)) * 2 * this._scaleProps.y;
+        height = Math.max(this.options.minHeight, height);
+        height = Math.min(this._scaleProps.maxHeight, height);
+        width = height * this._scaleProps.ratio;
+
+      } else {
+        this._width += (this._scaleProps.curX - Math.ceil(Touch.screenX)) * 2 * this._scaleProps.x;
+        this._height += (this._scaleProps.curY - Math.ceil(Touch.screenY)) * 2 * this._scaleProps.y;
+        this._width = Math.max(this.options.paddingToEdge, this._width);
+        this._height = Math.max(this.options.paddingToEdge, this._height);
+        this._width = Math.min(size.x-this.options.paddingToEdge, this._width);
+        this._height = Math.min(size.y-this.options.paddingToEdge, this._height);
+      }
+
+      this.dimensions.width = width;
+      this.dimensions.height = height;
+
+      this._scaleProps.curX = Math.ceil(Touch.screenX);
+      this._scaleProps.curY = Math.ceil(Touch.screenY);
+
+      this.bounds = this._getBoundsPinToCenter();
+      this._setDimensions();
+      this._render();
+    },
+
+    _onScaleTouchEnd: function(event) {
+      L.DomEvent.removeListener(this._scaleHandle, "touchend", this._onScaleTouchEnd);
+      L.DomEvent.removeListener(this._scaleHandle, "touchmove", this._onScaleTouchMove);
+      L.DomEvent.addListener(this._scaleHandle, "touchstart", this._onScaleTouchStart, this);
+
       L.DomUtil.enableTextSelection();
       L.DomUtil.removeClass(this._container, 'scaling');
       this.fire("change");

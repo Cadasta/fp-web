@@ -469,8 +469,8 @@ SIDE MENU
 .leaflet-areaselect-handle.scale-handle {
     background-color: white;
     border: solid 2px black;
-    width: 10px;
-    height: 10px;
+    width: 20px;
+    height: 20px;
 /*    margin-top: 23px;
     margin-left: 23px;*/
 }
