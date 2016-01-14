@@ -98,9 +98,21 @@ on the "See one, do one, teach one" basis that doctors do...)
 
 ## Things to clean
 
-1. big_map.css not compiling
-2. routes are a bit funny b/c we're using an explicite route with 'compose'. 
-   'show' is kind of right, but not quite.
-3. gems: mapbox-rails
-4. `<script>` at the bottom of show.html.erb should be moved into a seperate
+ * big_map.css not compiling
+
+ * routes are a bit funny b/c we're using an explicite route with 'compose'. 
+   'show' is kind of right, but not quite.  *It looks like we might want to
+   do something like this (`new` is the normal Rails method for getting a
+   page to create a new resource; `show` is supposed to be used for displaying
+   an existing resource -- this bit isn't quite RESTful, which makes it a
+   little confusing):*
+
+```
+get '/compose' => 'compose#new', as: :compose
+post '/compose' => 'compose#create'
+```
+
+ * gems: mapbox-rails  *Easy warm-up task for next time.*
+
+ * `<script>` at the bottom of show.html.erb should be moved into a seperate
    js file or cleaned up.
