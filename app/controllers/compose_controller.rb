@@ -17,108 +17,111 @@ class ComposeController < ApplicationController
   end
 
   def create
-    # raw geojson data
-    if params[:geojson_data]
-      # params[:geojson_data] is a String,
-      # so need to convert to JSON
-      geojson = JSON.parse(params[:geojson_data])
+    puts params
+    
+#     # raw geojson data
+#     if params[:geojson_data]
+#       # params[:geojson_data] is a String,
+#       # so need to convert to JSON
+#       geojson = JSON.parse(params[:geojson_data])
 
-      # TODO: need to validate geojson
+#       # TODO: need to validate geojson
 
-      props = geojson['properties']
+#       props = geojson['properties']
 
 
-      # TODO: need to validate geojson props
-      params[:atlas] = {
-        title: props['title'] || '',
-        text: props['description'] || '',
-        paper_size: props['paper_size'] || 'letter',
-        orientation: props['orientation'] || 'landscape',
-        layout: props['layout'] || 'full-page',
-        utm_grid: props['utm_grid'] || false,
-        redcross_overlay: props['redcross_overlay'] || false,
-        zoom: props['zoom'] || 16,
-        provider: Providers.layers[Providers.default.to_sym][:template],
-        west: nil,
-        south: nil,
-        east: nil,
-        north: nil,
-        rows: 0,
-        cols: 0
-      }
+#       # TODO: need to validate geojson props
+#       params[:atlas] = {
+#         title: props['title'] || '',
+#         text: props['description'] || '',
+#         paper_size: props['paper_size'] || 'letter',
+#         orientation: props['orientation'] || 'landscape',
+#         layout: props['layout'] || 'full-page',
+#         utm_grid: props['utm_grid'] || false,
+#         redcross_overlay: props['redcross_overlay'] || false,
+#         zoom: props['zoom'] || 16,
+#         provider: Providers.layers[Providers.default.to_sym][:template],
+#         west: nil,
+#         south: nil,
+#         east: nil,
+#         north: nil,
+#         rows: 0,
+#         cols: 0
+#       }
 
-      templates = []
+#       templates = []
 
-      for feature in geojson['features']
-        b = nil
-        p = feature['properties']
+#       for feature in geojson['features']
+#         b = nil
+#         p = feature['properties']
 
-        templates.push(p['provider'] || Providers.layers[Providers.default.to_sym][:template])
-        zoom = p['zoom'] || 16
+#         templates.push(p['provider'] || Providers.layers[Providers.default.to_sym][:template])
+#         zoom = p['zoom'] || 16
 
-        if feature['geometry']['type'] == 'Point'
-          b = point_extent(feature['geometry']['coordinates'], zoom, [1200, 1200])
-        elsif feature['geometry']['type'] == 'Polygon'
-          b = polygon_extent(feature['geometry']['coordinates'])
-        else
-          # skip
-        end
+#         if feature['geometry']['type'] == 'Point'
+#           b = point_extent(feature['geometry']['coordinates'], zoom, [1200, 1200])
+#         elsif feature['geometry']['type'] == 'Polygon'
+#           b = polygon_extent(feature['geometry']['coordinates'])
+#         else
+#           # skip
+#         end
 
-        if !b.nil?
-          if params[:atlas][:west].nil?
-            params[:atlas][:west] = b[0]
-          else
-            params[:atlas][:west] = [params[:atlas][:west], b[0]].min
-          end
+#         if !b.nil?
+#           if params[:atlas][:west].nil?
+#             params[:atlas][:west] = b[0]
+#           else
+#             params[:atlas][:west] = [params[:atlas][:west], b[0]].min
+#           end
 
-          if params[:atlas][:east].nil?
-            params[:atlas][:east] = b[2]
-          else
-            params[:atlas][:east] = [params[:atlas][:east], b[2]].max
-          end
+#           if params[:atlas][:east].nil?
+#             params[:atlas][:east] = b[2]
+#           else
+#             params[:atlas][:east] = [params[:atlas][:east], b[2]].max
+#           end
 
-          if params[:atlas][:north].nil?
-            params[:atlas][:north] = b[3]
-          else
-            params[:atlas][:north] = [params[:atlas][:north], b[3]].max
-          end
+#           if params[:atlas][:north].nil?
+#             params[:atlas][:north] = b[3]
+#           else
+#             params[:atlas][:north] = [params[:atlas][:north], b[3]].max
+#           end
 
-          if params[:atlas][:south].nil?
-            params[:atlas][:south] = b[1]
-          else
-            params[:atlas][:south] = [params[:atlas][:south], b[1]].min
-          end
-        end
-      end
+#           if params[:atlas][:south].nil?
+#             params[:atlas][:south] = b[1]
+#           else
+#             params[:atlas][:south] = [params[:atlas][:south], b[1]].min
+#           end
+#         end
+#       end
 
-      # TODO: figure out how to calculate rows & columns
-      # TODO: how to handle providers & zooms for pages ("features")
-#      return redirect_to wizard_path(:search)
-    end
+#       # TODO: figure out how to calculate rows & columns
+#       # TODO: how to handle providers & zooms for pages ("features")
+# #      return redirect_to wizard_path(:search)
+#     end
 
-    # geojson file
-    if params[:geojson_file]
-#      return redirect_to wizard_path(:search)
-    end
+#     # geojson file
+#     if params[:geojson_file]
+# #      return redirect_to wizard_path(:search)
+#     end
 
-    # convert params into a form that ActiveRecord likes (retaining old input
-    # names)
-    params[:atlas] = {
-      title: params[:atlas_title],
-      text: params[:atlas_text],
-      provider: params[:atlas_provider]
-    }
+#     # convert params into a form that ActiveRecord likes (retaining old input
+#     # names)
+#     params[:atlas] = {
+#       title: params[:atlas_title],
+#       text: params[:atlas_text],
+#       provider: params[:atlas_provider]
+#     }
 
-    latitude, longitude, zoom = params[:atlas_location].split(/,\s*| /).map(&:strip)
-    zoom ||= 12 # arbitrary zoom
+#     latitude, longitude, zoom = params[:atlas_location].split(/,\s*| /).map(&:strip)
+#     zoom ||= 12 # arbitrary zoom
 
-    session[:atlas] = params[:atlas].merge({
-      user_id: current_user.try(:id)
-    })
+#     session[:atlas] = params[:atlas].merge({
+#       user_id: current_user.try(:id)
+#     })
 
 #    return redirect_to wizard_path(:select, zoom: zoom, lat: latitude, lon: longitude) if latitude && longitude
 
 #    redirect_to wizard_path(:search, canned: true)
+     redirect_to compose_path
   end
 
   private

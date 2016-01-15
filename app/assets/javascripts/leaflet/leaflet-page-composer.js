@@ -513,22 +513,20 @@ L.PageComposer = L.Class.extend({
     },
 
     _onReorientation: function(){
-      var form = document.getElementById("page-layout");
+      var form = document.getElementById("atlas_orientation");
       var self = this;
       
       L.DomEvent.addListener(form, "change", function(){
-        var selected = this["page-aspect-ratio"];
-        self._setOrientation(selected[selected.selectedIndex].value);
+        self._setOrientation(this[this.selectedIndex].value);
       });
     },
 
     _onPaperSizeChange: function(){
-      var form = document.getElementById("page-layout");
+      var form = document.getElementById("atlas_paper_size");
       var self = this;
 
       L.DomEvent.addListener(form, "change", function(){
-        var selected = this["page-scale"];
-        self._setPaperSize(selected[selected.selectedIndex].value);
+        self._setPaperSize(this[this.selectedIndex].value);
       });
     },
     

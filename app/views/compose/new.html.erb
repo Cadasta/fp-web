@@ -1,0 +1,130 @@
+<% content_for :title, _('Make - Field Papers') %>
+
+		<div id="menu">
+
+      <div class="field-papers-logo">
+  		  <%= image_tag "logo-header.png" %>
+      </div> <!-- field-papers-logo -->
+
+      <div class="atlas-location-and-name">
+
+        <h2>Atlas Location & Information</h2>
+
+        <div class="atlas-search-field">
+          <form id="map-location-search">
+            <label class="item item-input">
+              <i class="icon ion-search placeholder-icon"></i>
+              <input id="searchTextField" class="map-location-search-box" type="text" name="searchBox" placeholder="Jump to a location" value="">
+              <input class="map-location-search-button" type="submit" value="Search">
+            </label>
+          </form> <!-- map-location-search -->
+        </div> <!-- atlast-search-field -->
+
+        <%= form_for :atlas do |f| %>
+          <%= f.text_field :zoom, hidden: true %>
+          <%= f.text_field :west, hidden: true %>
+          <%= f.text_field :south, hidden: true %>
+          <%= f.text_field :east, hidden: true %>
+          <%= f.text_field :north, hidden: true %>
+          <%= f.text_field :rows, hidden: true %>
+          <%= f.text_field :cols, hidden: true %>
+          <div id="printing-information">
+            <%= f.label :title, _("Name your atlas"), class:"title" %>
+            <%= f.text_field :title %>
+            <%= f.label :text, _("Notes"), class:"notes" %>
+            <%= f.text_area :text %>
+            
+            <div class="include-notes">
+              <%= f.check_box :layout %>
+              <%= f.label :layout, _("Include notes below map on each page") %>
+            </div>
+            <div class="private-map">
+              <%= f.check_box :private %>
+              <%= f.label :private, _("Private") %>
+            </div>
+          </div>
+          
+          <h2>Grid Layout</h2>
+          <div class="page-sizing-and-orientation" id='page-layout'>
+            <div class="page-layout-group">
+      
+              <%= f.label :paper_size, _("Paper Size"), class:"page-layout-label" %>
+              <%= f.select :paper_size, options_for_select([["Letter", "letter"], ["A3", "a3"], ["A4", "a4"]]) %>
+            </div>
+            <div class="page-layout-group">
+              <%= f.label :orientation, _("Orientation"), class:"page-layout-label" %>
+              <%= f.select :orientation, options_for_select([["Landscape", "landscape"], ["Portrait", "portrait"]]) %>
+            </div>
+          </div>
+            <%= f.label :provider, _("Basemap"), class:"basemap-selector-label" %>
+            <%= f.select :provider, options_for_select(Providers.options, [Providers.default]) %>
+            
+      </div> <!-- atlas-location-and-name -->
+
+      <div class='col-row-modifiers'>
+
+        <div class="col-row-modifiers-group">
+
+          <div class="col-row-modifiers-label">Column</div>
+
+          <div class="grid-modifier-group">
+            <div class="grid-modifier minus">-</div>
+            <div class="grid-modifier number">2</div>
+            <div class="grid-modifier plus">+</div>
+          </div> <!-- grid-modifier-group -->
+
+        </div> <!-- col-row-modifier-group -->
+
+        <div class="col-row-modifiers-group">
+
+          <div class="col-row-modifiers-label">Row</div>
+
+          <div class="grid-modifier-group">
+      			<div class="grid-modifier minus">-</div>
+            <div class="grid-modifier number">1</div>
+            <div class="grid-modifier plus">+</div>
+          </div> <!-- grid-modifier-group -->
+
+      	</div> <!-- col-row-modifier-group -->
+
+      </div> <!-- col-row-modifiers -->
+      
+      <h2>Add - ons</h2>
+      <div class="add-ons">
+      <%= f.check_box :utm_grid%>
+      <%= f.label :utm_grid, _("UTM Grid")  %>
+      <%= f.check_box :redcross_overlay %>
+      <%= f.label :redcross_overlay, _("GADMOverlay") %>
+      <%= f.submit _("Print Atlas"), {:id => "final-step"} %>
+      </div>
+
+      <% end %>
+      
+    </div><!-- menu -->
+    
+    <div id="map" class="leaflet-pagelayout-container leaflet-fade-anim"></div>
+
+<% content_for :foot do %>
+<script>
+  var map = L.map('map', {
+    center: [35.2048883, -92.4479108],
+    zoom: 18,
+    scrollWheelZoom: false
+  });
+
+L.pageComposer = function(options) {
+    return new L.PageComposer(options);
+};
+
+L.pageComposer().addTo(map);
+
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoibGluempheCIsImEiOiJjaWh6Y2hnZGIwNDkzdGxtMXJvMHVidzByIn0.Q1vAOjJ2H2pmJsxap7c2bQ'
+    }).addTo(map); 
+</script>
+<% end %>
+
