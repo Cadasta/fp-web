@@ -9,9 +9,10 @@ class ComposeController < ApplicationController
   # allow existing forms (w/o CSRF projection) to create canned atlases
   skip_before_filter :verify_authenticity_token, only: :create
 
-  def show
+  def new
     # create an atlas instance with whatever we know about it at this point
     # (which could very well be nothing)
+    # THIS WILL BE PARAMETERS, NOT THE SESSION!!!
     @atlas = Atlas.new(session[:atlas] || {})
   end
 

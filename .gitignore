@@ -18,3 +18,5 @@ vendor/bundle
 .env
 venv
 .tx/fieldpapers.www/
+public/assets/
+

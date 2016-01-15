@@ -231,8 +231,8 @@ L.PageComposer = L.Class.extend({
       this.refs.prevCols = this.refs.cols;
       this.refs.prevRows = this.refs.rows;
       
-      count[1].textContent = this.refs.cols;
-      count[0].textContent = this.refs.rows;
+      count[0].textContent = this.refs.cols;
+      count[1].textContent = this.refs.rows;
 
       this.bounds = this._getBoundsPinToCenter();
       this._render();
@@ -303,10 +303,10 @@ L.PageComposer = L.Class.extend({
         //adds +/-
     _createPageModifiers: function() {
       var gridModifiers = document.getElementsByClassName("grid-modifier");
-      this._addRow = gridModifiers[1];
-      this._minusRow = gridModifiers[2];
-      this._addCol = gridModifiers[5];
-      this._subCol = gridModifiers[3];
+      this._addRow = gridModifiers[5];
+      this._minusRow = gridModifiers[3];
+      this._addCol = gridModifiers[2];
+      this._subCol = gridModifiers[0];
 
       L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
       L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
