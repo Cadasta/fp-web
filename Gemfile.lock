@@ -19,6 +19,12 @@ GIT
       sass-rails (>= 3.1)
 
 GIT
+  remote: https://github.com/aai/mapbox-rails
+  revision: faa06fee4a046ea4b3fb499422f2cef6244ca991
+  specs:
+    mapbox-rails (2.2.1)
+
+GIT
   remote: https://github.com/ollie/geo-mercator.git
   revision: c17ecda368591cc6b9f62010ae3374fc4b449cbb
   specs:
@@ -328,8 +334,6 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
-    wicked (1.2.1)
-      railties (>= 3.0.7)
     workflow (1.2.0)
     xml-simple (1.1.5)
 
@@ -367,6 +371,7 @@ DEPENDENCIES
   kaminari
   kaminari-i18n
   leaflet-rails!
+  mapbox-rails!
   meta_request
   minitest-reporters
   mysql2 (~> 0.3.18)
@@ -388,7 +393,6 @@ DEPENDENCIES
   turbolinks
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
-  wicked
   workflow
 
 BUNDLED WITH
