@@ -4,7 +4,7 @@ L.PageComposer = L.Class.extend({
     includes: L.Mixin.Events,
 
     options: {
-        pageHeight: 150,
+        pageHeight: 400,
         minHeight: 80,
         paddingToEdge: 30,
         keepAspectRatio: true,
@@ -43,7 +43,7 @@ L.PageComposer = L.Class.extend({
         this._width = (this.options.pageHeight * this.refs.page_aspect_ratio) * this.refs.cols;
         this._height = this.options.pageHeight * this.refs.rows;
     },
-    
+
     //all the same
     addTo: function(map) {
         this.map = map;
@@ -63,21 +63,21 @@ L.PageComposer = L.Class.extend({
       
       this._container.parentNode.removeChild(this._container);
     },
-    
+
     //all the same
     getBounds: function() {
         var size = this.map.getSize();
         var topRight = new L.Point();
         var bottomLeft = new L.Point();
-        
+
         bottomLeft.x = Math.round((size.x - this._width) / 2);
         topRight.y = Math.round((size.y - this._height) / 2);
         topRight.x = size.x - bottomLeft.x;
         bottomLeft.y = size.y - topRight.y;
-        
+
         var sw = this.map.containerPointToLatLng(bottomLeft);
         var ne = this.map.containerPointToLatLng(topRight);
-        
+
         return new L.LatLngBounds(sw, ne);
     },
 
@@ -108,7 +108,7 @@ L.PageComposer = L.Class.extend({
             [latlngPoints[0],latlngPoints[2]],
             [latlngPoints[1],latlngPoints[3]]
           ]);
-          
+
           self._updateToolDimensions();
           self.fire("change");
         }
@@ -129,7 +129,7 @@ L.PageComposer = L.Class.extend({
       this.bounds = this.getBounds();
     },
 
-    _setOrientation: function(x) {
+    setOrientation: function(x) {
 
       if (this.refs.paper_aspect_ratios[this.refs.paperSize][x] &&
           this.refs.page_aspect_ratio !== this.refs.paper_aspect_ratios[this.refs.paperSize][x]) {
@@ -151,17 +151,26 @@ L.PageComposer = L.Class.extend({
       return this;
     },
 
+    getPages: function() {
+      return {cols: this.refs.cols, rows: this.refs.rows};
+    },
+
+    getPinnedBounds: function() {
+      return this.bounds || null;
+    },
+
     _updateOrientation: function(){
       //switch from landscape to portrait
       this.dimensions.height = this.dimensions.cellWidth * this.refs.rows;
       this.dimensions.width = this.dimensions.cellHeight * this.refs.cols;
-
+      // make sure it fits on the screen.
+      this._updateToolDimensions();
       // re-calc bounds
       this.bounds = this._getBoundsPinToCenter();
       this._render();
     },
 
-    _setPaperSize: function(x) {
+    setPaperSize: function(x) {
       if (this.refs.paper_aspect_ratios[x] || x !== this.refs.paperSize) {
         this.refs.paperSize = x;
         this.refs.page_aspect_ratio = this.refs.paper_aspect_ratios[this.refs.paperSize][this.refs.pageOrientation];
@@ -180,18 +189,9 @@ L.PageComposer = L.Class.extend({
 
     _updatePaperSize: function(){
       //switch between letter/a3/a4
-      var scale = this.refs.paper_aspect_ratios[this.refs.paperSize].scale;
-
-      if (scale > this.refs.toolScale) {
-        this.dimensions.width = this.dimensions.width * scale;
-        this.refs.toolScale = scale;
-      } else if (scale < this.refs.toolScale) {
-        this.dimensions.width = this.dimensions.width / this.refs.toolScale;
-        this.refs.toolScale = scale;
-      }
-
       this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
-
+      // make sure it fits on the screen.
+      this._updateToolDimensions();
       // re-calc bounds
       this.bounds = this._getBoundsPinToCenter();
       this._render();
@@ -208,9 +208,10 @@ L.PageComposer = L.Class.extend({
       this.dimensions.cellWidth = this.dimensions.width / this.refs.cols;
       this.dimensions.cellHeight = this.dimensions.height / this.refs.rows;
     },
-    
+
     _updateToolDimensions: function() {
       var size = this.map.getSize();
+      //to update the numbers displayed in the side menu
       var count = document.getElementsByClassName("number");
 
       var width = this.dimensions.width / this.refs.prevCols;
@@ -218,7 +219,7 @@ L.PageComposer = L.Class.extend({
 
       this.dimensions.width = width * this.refs.cols;
       this.dimensions.height = height * this.refs.rows;
-
+      /* ALTERNATE CODE TO KEEP GRID AS BIG AS POSSIBLE AT ALL TIMES. DELETE LINES 223 - 230
       if (this.dimensions.height > size.y - 40) {
         this.dimensions.height = size.y - 40;
         this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
@@ -227,10 +228,23 @@ L.PageComposer = L.Class.extend({
         this.dimensions.width = size.x - 40;
         this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
       }
-      
+      */
+
+
+      if (this.dimensions.height > size.y - 60 || this.dimensions.height < size.y - 70 ) {
+        this.dimensions.height = size.y - 60;
+        this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+      }
+      if (this.dimensions.width > size.x - 60 || this.dimensions.width < size.x - 70 && !this.dimensions.height > size.y - 60 ) {
+        this.dimensions.width = size.x - 60;
+        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+      }
+
+
+
       this.refs.prevCols = this.refs.cols;
       this.refs.prevRows = this.refs.rows;
-      
+
       count[0].textContent = this.refs.cols;
       count[1].textContent = this.refs.rows;
 
@@ -313,7 +327,7 @@ L.PageComposer = L.Class.extend({
       L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
       L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
     },
-    
+
     _createElements: function() {
         if (!!this._container)
           return;
@@ -333,15 +347,14 @@ L.PageComposer = L.Class.extend({
         this._setDimensions();
         this._createPages();
         this._onSearch();
-        this._onReorientation();
-        this._onPaperSizeChange();
 
         this.map.on("move",     this._onMapMovement, this);
         this.map.on("moveend",  this._onMapMovement, this);
         this.map.on("viewreset",  this._onMapReset, this);
         this.map.on("resize",   this._onMapReset, this);
 
-        this.fire("change");
+        this._onMapReset();
+        this._updateToolDimensions();
     },
 
     // Adds the scale button
@@ -380,7 +393,6 @@ L.PageComposer = L.Class.extend({
       this._setDimensions();
       this._updateToolDimensions();
       this._createPages();
-
       this.fire("change");
     },
 
@@ -403,6 +415,7 @@ L.PageComposer = L.Class.extend({
     _onMapMovement: function(){
         this.bounds = this._getBoundsPinToCenter();
         this._render();
+        this.fire("change");
     },
 
     _onMapReset: function() {
@@ -412,7 +425,7 @@ L.PageComposer = L.Class.extend({
     _onMapResize: function() {
         //this._render();
     },
-    
+
     _onMapChange: function() {
         this.fire("change");
     },
@@ -503,22 +516,13 @@ L.PageComposer = L.Class.extend({
     },
 
     _onSearch: function(){
-      var form = document.forms[0];
+      var form = document.forms['map-location-search'];
       var self = this;
-      
+
       L.DomEvent.addListener(form, "submit", function(e){
         L.DomEvent.preventDefault(e);
         self._updateLocation(form.searchBox.value);
         }, self);
-    },
-
-    _onReorientation: function(){
-      var form = document.getElementById("atlas_orientation");
-      var self = this;
-      
-      L.DomEvent.addListener(form, "change", function(){
-        self._setOrientation(this[this.selectedIndex].value);
-      });
     },
 
     _onPaperSizeChange: function(){
@@ -555,3 +559,7 @@ L.PageComposer = L.Class.extend({
 
     },
 });
+
+L.pageComposer = function(options) {
+    return new L.PageComposer(options);
+};

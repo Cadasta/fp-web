@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.2.3"
+ruby "2.2.4"
 
 ## standard dependencies
 
@@ -36,11 +36,13 @@ gem "gettext_i18n_rails" # gettext-style i18n
 gem "has_scope" # automatic filter generation
 gem "http_accept_language"
 gem "kaminari" # pagination
+gem "kaminari-i18n"
 gem "leaflet-rails", git: 'https://github.com/stamen/leaflet-rails'
-gem "paperclip", "~> 4.2.1" # file attachments
+gem "paperclip", "~> 4.3.1" # file attachments
 gem "puma" # app server
 gem "rack-contrib"
 gem "rack-rewrite" # URL rewriting middleware
+gem "rails-i18n", "~> 4.0.0"
 gem "s3_direct_upload", git: 'https://github.com/Cadasta/s3_direct_upload'
 gem "mysql2", "~> 0.3.18"
 gem "workflow"
@@ -48,6 +50,7 @@ gem "json"
 gem 'geo', git: 'https://github.com/ollie/geo-mercator.git'
 gem 'actionview-encoded_mail_to'
 gem 'therubyracer', '~> 0.12.2'
+gem 'mapbox-rails', git: 'https://github.com/aai/mapbox-rails'
 
 ## production-only dependencies
 

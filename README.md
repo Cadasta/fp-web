@@ -209,26 +209,42 @@ first.
 If using `direnv` or `foreman`, add these to `.env`. Otherwise, ensure that
 they are available to the environment in which Rails is running.
 
-* `DATABASE_URL` - development / production database URL. Probably similar to
+* `DATABASE_URL` - development database URL. Probably similar to
   `mysql2://root@localhost/fieldpapers_development`
 * `TEST_DATABASE_URL` - test database URL.
+* `RDS_DB_NAME` - production database name.
+* `RDS_HOSTNAME` - production database hostname.
+* `RDS_PASSWORD` - production database password.
+* `RDS_PORT` - production database port.
+* `RDS_USERNAME` - production database username.
+* `MAIL_ORIGIN` - From address to use for automated system emails.
+* `MAIL_SOURCE_ARN` - AWS SES mail source identity. (Associated credentials must
+  be granted access to send from this)
+* `BASE_URL` - Site base URL (Network-accessible, i.e. from a Docker container).
 * `S3_BUCKET_NAME` - S3 bucket for file storage. Defaults to
   `dev.files.fieldpapers.org` (development), `test.files.fieldpapers.org`
   (test), and `files.fieldpapers.org` (production).
 * `AWS_ACCESS_KEY_ID` - AWS key with read/write access to the configured S3
   bucket(s).
 * `AWS_SECRET_ACCESS_KEY` - Corresponding secret.
-* `AWS_REGION` - AWS region of S3 bucket.  Defaults to "default"
-  region of `us-east-1`.
-* `API_BASE_URL` - Network-accessible (i.e. from a Docker container) base URL
-  rendered into PDFs.
+* `AWS_REGION` - AWS region to use for services.
 * `BASE_URL` - Base URL, e.g. `http://fieldpapers.org`.
 * `TASK_BASE_URL` - Base URL for the task server (probably an instance of
   [fp-tasks](https://github.com/fieldpapers/fp-tasks)).
 * `TILE_BASE_URL` - Base URL for the snapshot tiler (probably an instance of
   [fp-tiler](https://github.com/fieldpapers/fp-tiler)).
 * `SENTRY_DSN` - Sentry DSN for exception logging. Optional.
-
+* `MAPZEN_SEARCH_KEY` - A Mapzen Search API key, obtained from
+  [mapzen.com/developers](https://mapzen.com/developers).
+* `STATIC_PATH` - Path to write static files to. Must be HTTP-accessible.
+  Defaults to `:rails_root/public` (to match the `STATIC_URI_PREFIX` default).
+* `STATIC_URI_PREFIX` - Prefix to apply to static paths (e.g.
+  http://example.org/path) to allow them to resolve. Defaults to `BASE_URL`.
+* `PERSIST` - File persistence. Can be `local` or `s3`. Defaults to `s3`.
+* `DEFAULT_CENTER` - Default center for atlas composition (when a geocoder is
+  unavailable). Expected to be in the form `<zoom>/<latitude>/<longitude>`.
+  Optional.
+  
 ### Running Tests
 
 ```bash

@@ -100,18 +100,51 @@ on the "See one, do one, teach one" basis that doctors do...)
 
  * Figure out asset pipeline: `big_map.css` not compiling; `<script>`
    at the bottom of `new.html.erb` should be moved into a separate JS
-   file or cleaned up. [**Ian**]
+   file or cleaned up. [**Ian**: `big_map.css` **DONE**]
 
- * Get `mapbox-rails` gem working. [**Ian**]
+ * Get `mapbox-rails` gem working. [**Ian**: **DONE**]
 
  * Improve atlas field names: `:text` to `:notes`, `:layout` to
    `:include_notes` or something like that. [**Ian**]
 
- * Figure out proper hidden fields. [**Ian**]
+ * Figure out proper hidden fields. [**Ian**: **DONE**]
 
  * Wire up changes to map location, zoom, rows and columns to hidden
-   form fields. [**Lindsey**/**Ian**]
+   form fields. [**Lindsey**: **DONE**]
 
- * Tidy up menu layout.  [**Lindsey**]
+ * Tidy up menu layout.  [**Lindsey**: **DONE**]
 
- * Deal with backend data processing.  [**Ian**]
+ * Deal with backend data processing.  [**Ian**: **PARTIALLY DONE**]
+
+
+## Next steps, Mark 2
+
+ * Tidy up accordions.  [**Lindsey**: **DONE**]
+
+ * Make "Field Papers" logo on map bigger (same size as on other
+   pages).  [**Lindsey**]
+
+ * Scroll wheel map zooming.  [**Lindsey**: **DONE**]
+
+ * Buttons: "Make atlas" and "Cancel".  [**Lindsey**]
+
+ * Make sure initial view in front end is initialised from initial
+   values passed by back end.  [**Lindsey** and **Ian**]
+
+ * Get atlas rendering working correctly.  (Do side-by-side comparison
+   of what's getting to task manager from back-end in "old"
+   vs. "new".)  [**Ian**: **DONE**]
+
+ * Get canned atlases working correctly.  (This goes with making sure
+   the initial view in the front end matches what's being sent from
+   the back end, but there might be some other bits to it.)  [**Ian**]
+
+ * Mocks of UI layout changes.  [**Lindsey** and **Chandra**]
+
+ * Grid interaction playground.  [**Lindsey** and **Ian**]
+
+ * Interaction playground to AWS.  [**Ian** and **Lindsey**]
+
+ * Set up survey for UI layout/interaction model choices.   [**Lindsey**]
+
+ * Survey translations.  [**Cadasta and friends**]

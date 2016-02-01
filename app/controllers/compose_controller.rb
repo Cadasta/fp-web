@@ -1,130 +1,145 @@
-require "placefinder"
+require "geocoder"
 require "providers"
 require "json"
 require "geo"
+require "csv"
 
 class ComposeController < ApplicationController
+  @@cities = nil
+
   layout "big_map"
-  
+
   # allow existing forms (w/o CSRF projection) to create canned atlases
   skip_before_filter :verify_authenticity_token, only: :create
 
   def new
-    # create an atlas instance with whatever we know about it at this point
-    # (which could very well be nothing)
-    # THIS WILL BE PARAMETERS, NOT THE SESSION!!!
-    @atlas = Atlas.new(session[:atlas] || {})
+    @atlas = Atlas.new
+    @initial_lat, @initial_lon, @initial_zoom = initial_center
+
+    # Convert params into a form that ActiveRecord likes (retaining old input
+    # names)
+    if params[:atlas_location]
+      puts params
+      new_params = {}
+      new_params[:lat], new_params[:lon], new_params[:zoom] =
+        params[:atlas_location].split(/,\s*| /).map(&:strip)
+      new_params[:zoom] ||= 12 # arbitrary zoom
+      if !params[:atlas_title].empty?
+        new_params[:title] = params[:atlas_title]
+      end
+      if !params[:atlas_text].empty?
+        new_params[:text] = params[:atlas_text]
+      end
+      if !params[:atlas_provider].empty?
+        new_params[:provider] = params[:atlas_provider]
+      end
+      redirect_to compose_path(new_params)
+    end
   end
 
   def create
-    puts params
-    
-#     # raw geojson data
-#     if params[:geojson_data]
-#       # params[:geojson_data] is a String,
-#       # so need to convert to JSON
-#       geojson = JSON.parse(params[:geojson_data])
+    # TODO: figure out how to calculate rows & columns
+    # TODO: how to handle providers & zooms for pages ("features")
+    if params[:geojson_data]
+      process_geojson
+      return redirect_to compose_path
+    end
 
-#       # TODO: need to validate geojson
+    # geojson file
+    if params[:geojson_file]
+      return redirect_to compose_path
+    end
 
-#       props = geojson['properties']
+    # Nasty: force numeric conversion of numeric strings in parameters
+    # from client...
+    @atlas = Atlas.new (Atlas.new atlas_params).attributes
+    @atlas.layout = @atlas.layout == 1 ? "half-page" : "full-page"
+    @atlas.save!
 
+    if @atlas.valid?
+      @atlas.render!
 
-#       # TODO: need to validate geojson props
-#       params[:atlas] = {
-#         title: props['title'] || '',
-#         text: props['description'] || '',
-#         paper_size: props['paper_size'] || 'letter',
-#         orientation: props['orientation'] || 'landscape',
-#         layout: props['layout'] || 'full-page',
-#         utm_grid: props['utm_grid'] || false,
-#         redcross_overlay: props['redcross_overlay'] || false,
-#         zoom: props['zoom'] || 16,
-#         provider: Providers.layers[Providers.default.to_sym][:template],
-#         west: nil,
-#         south: nil,
-#         east: nil,
-#         north: nil,
-#         rows: 0,
-#         cols: 0
-#       }
+      return redirect_to atlas_path(@atlas)
+    end
 
-#       templates = []
-
-#       for feature in geojson['features']
-#         b = nil
-#         p = feature['properties']
-
-#         templates.push(p['provider'] || Providers.layers[Providers.default.to_sym][:template])
-#         zoom = p['zoom'] || 16
-
-#         if feature['geometry']['type'] == 'Point'
-#           b = point_extent(feature['geometry']['coordinates'], zoom, [1200, 1200])
-#         elsif feature['geometry']['type'] == 'Polygon'
-#           b = polygon_extent(feature['geometry']['coordinates'])
-#         else
-#           # skip
-#         end
-
-#         if !b.nil?
-#           if params[:atlas][:west].nil?
-#             params[:atlas][:west] = b[0]
-#           else
-#             params[:atlas][:west] = [params[:atlas][:west], b[0]].min
-#           end
-
-#           if params[:atlas][:east].nil?
-#             params[:atlas][:east] = b[2]
-#           else
-#             params[:atlas][:east] = [params[:atlas][:east], b[2]].max
-#           end
-
-#           if params[:atlas][:north].nil?
-#             params[:atlas][:north] = b[3]
-#           else
-#             params[:atlas][:north] = [params[:atlas][:north], b[3]].max
-#           end
-
-#           if params[:atlas][:south].nil?
-#             params[:atlas][:south] = b[1]
-#           else
-#             params[:atlas][:south] = [params[:atlas][:south], b[1]].min
-#           end
-#         end
-#       end
-
-#       # TODO: figure out how to calculate rows & columns
-#       # TODO: how to handle providers & zooms for pages ("features")
-# #      return redirect_to wizard_path(:search)
-#     end
-
-#     # geojson file
-#     if params[:geojson_file]
-# #      return redirect_to wizard_path(:search)
-#     end
-
-#     # convert params into a form that ActiveRecord likes (retaining old input
-#     # names)
-#     params[:atlas] = {
-#       title: params[:atlas_title],
-#       text: params[:atlas_text],
-#       provider: params[:atlas_provider]
-#     }
-
-#     latitude, longitude, zoom = params[:atlas_location].split(/,\s*| /).map(&:strip)
-#     zoom ||= 12 # arbitrary zoom
-
-#     session[:atlas] = params[:atlas].merge({
-#       user_id: current_user.try(:id)
-#     })
-
-#    return redirect_to wizard_path(:select, zoom: zoom, lat: latitude, lon: longitude) if latitude && longitude
-
-#    redirect_to wizard_path(:search, canned: true)
-     redirect_to compose_path
+    redirect_to compose_path
   end
 
   private
+
+  def process_geojson
+    # params[:geojson_data] is a String,
+    # so need to convert to JSON
+    geojson = JSON.parse(params[:geojson_data])
+
+    # TODO: need to validate geojson
+
+    props = geojson['properties']
+
+
+    # TODO: need to validate geojson props
+    params[:atlas] = {
+      title: props['title'] || '',
+      text: props['description'] || '',
+      paper_size: props['paper_size'] || 'letter',
+      orientation: props['orientation'] || 'landscape',
+      layout: props['layout'] || 'full-page',
+      utm_grid: props['utm_grid'] || false,
+      redcross_overlay: props['redcross_overlay'] || false,
+      zoom: props['zoom'] || 16,
+      provider: Providers.layers[Providers.default.to_sym][:template],
+      west: nil,
+      south: nil,
+      east: nil,
+      north: nil,
+      rows: 0,
+      cols: 0
+    }
+
+    templates = []
+
+    for feature in geojson['features']
+      b = nil
+      p = feature['properties']
+
+      templates.push(p['provider'] || Providers.layers[Providers.default.to_sym][:template])
+      zoom = p['zoom'] || 16
+
+      if feature['geometry']['type'] == 'Point'
+        b = point_extent(feature['geometry']['coordinates'], zoom, [1200, 1200])
+      elsif feature['geometry']['type'] == 'Polygon'
+        b = polygon_extent(feature['geometry']['coordinates'])
+      else
+        # skip
+      end
+
+      if !b.nil?
+        if params[:atlas][:west].nil?
+          params[:atlas][:west] = b[0]
+        else
+          params[:atlas][:west] = [params[:atlas][:west], b[0]].min
+        end
+
+        if params[:atlas][:east].nil?
+          params[:atlas][:east] = b[2]
+        else
+          params[:atlas][:east] = [params[:atlas][:east], b[2]].max
+        end
+
+        if params[:atlas][:north].nil?
+          params[:atlas][:north] = b[3]
+        else
+          params[:atlas][:north] = [params[:atlas][:north], b[3]].max
+        end
+
+        if params[:atlas][:south].nil?
+          params[:atlas][:south] = b[1]
+        else
+          params[:atlas][:south] = [params[:atlas][:south], b[1]].min
+        end
+      end
+    end
+  end
 
   def atlas_params
     params.require(:atlas).permit \
@@ -170,5 +185,19 @@ class ComposeController < ApplicationController
 
     return [west, south, east, north]
 
+  end
+
+  def initial_center
+    if FieldPapers::DEFAULT_CENTER
+      return FieldPapers::DEFAULT_LATITUDE,
+             FieldPapers::DEFAULT_LONGITUDE,
+             FieldPapers::DEFAULT_ZOOM
+    else
+      if @@cities.nil?
+        @@cities = CSV.read("config/capitals.dat")
+      end
+      lat, lon = @@cities.sample
+      return lat, lon, 8
+    end
   end
 end

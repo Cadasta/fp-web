@@ -1,146 +1,574 @@
-#compose-search {
-  margin: 6rem 0;
+/*************
+MIX-INS
+*************/
+
+@mixin flexbox-cb($prefix, $option) {
+    -webkit-box-flex#{$prefix}: #{$option};      /* OLD - iOS 6-, Safari 3.1-6 */
+    -moz-box-flex#{$prefix}: #{$option};         /* OLD - Firefox 19- */
+    -webkit-flex#{$prefix}: #{$option};          /* Chrome */
+    -ms-flex#{$prefix}: #{$option};              /* IE 10 */
+    flex#{$prefix}: #{$option};
 }
 
-.crumbs {
-    margin-bottom: 2.5rem;
-    height: 50px;
-    overflow: hidden;
-    color: #ccc;
+@mixin display-flex(){
+  display: flex;
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  // display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;
 }
 
-.crumb {
-    position: relative;
-    display: block;
-    float: left;
-    padding: 0 20px 0 35px;
-    line-height: 50px;
-    background: #ccc;
-    margin-left: 15px;
-    font-size: 34px;
-    color: #fff;
-}
-
-.crumb:first-child {
-    margin-left: 0;
-    padding-left: 20px;
-}
-
-.crumb:after{
-    content: "";
-    border-top: 25px solid transparent;
-    border-bottom: 25px solid transparent;
-    border-left: 15px solid #ccc;
-    position: absolute;
-    left: 100%;
-    top: 0;
-}
-
-.crumb:before {
-    content: "";
-    border-top: 25px solid transparent;
-    border-bottom: 25px solid transparent;
-    border-left: 15px solid #fff;
-    position: absolute; left: 0; top: 0;
-}
-
-.crumb:first-child:before {
-    display: none;
-}
-
-.crumb.active {
-    background: #000;
-    color: #fff;
-}
-
-.crumb.active:after {
-    border-left-color: #000;
-}
+/**********
+GENERAL FOR COMPOSE
+***********/
 
 
-// layout styles
-.radio-cards {
-    margin-bottom: 2.5rem;
+body .big-map {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
-.radio-cards .inner {
-    display: inline-block;
+
+.big-map-container {
+  position: relative;
+  top: -10px;
+  left: -10px;
+
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
-.radio-cards .inner * {
-    text-align: left;
-}
-.radio-cards label {
-    font-weight: normal;
-}
-.radio-cards input[type="radio"] {
+
+/***************
+SIDE MENU
+**************/
+
+#big-map-menu {
+  @include display-flex();
+  @include flexbox-cb(-flow, column);
+  @include flexbox-cb(-wrap, nowrap);
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 130px;
+  height: 100vh;
+
+  margin: 0;
+  padding-right: 0;
+
+  border: 2px solid #eee;
+  border-top: none;
+
+  form {
     margin-bottom: 0;
-}
-.radio-cards p {
+  }
+
+  label {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  input[type=text] {
+    width: 90%;
+    height: 20px;
+    font-size: 1rem;
+  }
+
+  textarea {
+    width: 90%;
+    max-width: 90%;
+    height: 30px;
     margin: 0;
+  }
+
+  input {
+    &[type="checkbox"],
+    &[type='text'] {
+      margin: 0;
+    }
+  }
+
+  select {
+    width: 90%;
+    padding: 0;
+    margin: 0;
+    height: 20px;
+    font-size: 1rem;
+  }
+
+  /****************
+  TOOLTIP
+  *****************/
+  .tooltips-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 2px;
+    font-size: 1rem;
+
+    .tooltips {
+      cursor: pointer;
+      display: inline;
+
+      &:hover {
+        transition: opacity 0.5s ease-in;
+        -webkit-transition: opacity 0.5s ease-in; /* Safari */;
+
+        &:before {
+          margin-left: 0;
+          opacity: 1;
+        }
+      }
+
+      &:before {
+        position: fixed;
+        max-width: 300px;
+        margin-top: 10px;
+        margin-left: -2000px; /* IE fix for incompatability with pointer-events: none */
+        padding: 8px;
+
+        background: white;
+        border: $light-grey 1px solid;
+        border-radius: 3px;
+
+        color: $dark-grey;
+        font-weight: bold;
+        content: attr(data-tooltip);
+
+        opacity: 0;
+        transition: opacity 0.3s;
+        -webkit-transition: opacity 0.3s; /* Safari */
+
+        z-index: 8;
+        pointer-events: none;
+      }
+    }
+  }
+
+  /****************
+  MENU LABELS AND ARROWS
+  *****************/
+
+  label {
+      color: #444;
+      font-weight: 400;
+  }
+
+  .accordion-header {
+    $arrow-height: 10px solid $dark-grey;
+    $arrow-width: 5px solid transparent;
+    $arrow-height-after: 15px solid white;
+    $arrow-width-after: 10px solid transparent;
+
+    width: 100%;
+    border-bottom: 2px solid $light-grey;
+    cursor: pointer;
+
+    h5 {
+      display: inline-block;
+      margin: 5px;
+      font-size: 1.3rem;
+    }
+
+    .box {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      float: right;
+
+        .down-arrow, .up-arrow {
+          position: relative;
+          width: 0;
+          height: 0;
+          margin: 0 auto;
+          margin-top: 10px;
+          border-right: $arrow-width;
+          border-left: $arrow-width;
+          transition: all .2s;
+          -webkit-transition: all .2s; /* Safari */
+        }
+
+        .down-arrow::after, .up-arrow::after {
+          position: absolute;
+          left: -10px;
+          border-right: $arrow-width-after;
+          border-left: $arrow-width-after;
+          content: "";
+          z-index: 1;
+        }
+
+        .down-arrow {
+          border-top: $arrow-height;
+        }
+
+        .up-arrow {
+          left: 3px;
+          margin-top: 9px;
+          border-bottom: $arrow-height;
+        }
+
+        .down-arrow::after {
+          top: -18px;
+          border-top: $arrow-height-after;
+        }
+
+        .up-arrow::after {
+          bottom: -18px;
+          left: -10px;
+          border-bottom: $arrow-height-after;
+        }
+      }
+  }
+
+  /**************
+  ACCORDION
+  ***************/
+  .accordion {
+
+    a {
+      text-decoration: none;
+      color: $font-color;
+
+      &:hover {
+        color: $secondary-color;
+      }
+    }
+
+    .accordion-body {
+      padding: 10px;
+    }
+
+    .accordion-group {
+      height: 31px;
+      overflow: hidden;
+      transition: height .5s ease-out;
+      -webkit-transition: height .5s ease-out; /* Safari */
+
+      h5 {
+        position: relative;
+      }
+    }
+
+    .selected {
+      width: 97%;
+      height: calc(100vh - 93px - 40px - 34px);
+      border-bottom: 2px solid $light-grey;
+      overflow: hidden;
+
+      .accordion-header {
+        border: none;
+      }
+    }
+  }
+
+  /****************
+  SEARCH
+  *****************/
+
+  .atlas-search-field {
+    width: 100%;
+    background: rgba($light-grey, 0.1);
+    border: $light-grey solid 1px;
+    border-right: none;
+
+    .map-location-search-box {
+      width: 90%;
+      margin: 5%;
+    }
+
+    .map-location-search-button {
+      width: 32%;
+      padding: 0 10px;
+      text-align: center;
+    }
+
+  }
+
+  /**************
+  NOTES + CHECKBOX
+  ***************/
+
+  .include-notes,
+  .private-map {
+    width: 90%;
+    color: #666;
+
+    label {
+      display: inline;
+    }
+  }
+
+
+  /**************
+  BASEMAP OPTIONS
+  ***************/
+
+
+  /**************
+  PAGE ORIENTATION AND PAPER SIZE
+  ***************/
+
+  .page-sizing-and-orientation {
+    @include display-flex();
+    @include flexbox-cb(-flow, row);
+    @include flexbox-cb(-wrap, wrap);
+    width: 100%;
+
+   .page-layout-group {
+      width: 50px;
+    }
+  }
+
+  /**************
+  ROW AND COL MODIFIERS
+  ***************/
+
+  .col-row-modifiers {
+    width: 130px;
+    align-items: left;
+
+    .col-row-modifiers-group {
+      width: 112px;
+      align-items: left;
+
+      .grid-modifier-group {
+        height: 20px;
+        width: 80px;
+        font-size: 13px;
+        display: inline-block;
+
+        cursor: pointer;
+        -webkit-user-select: none;  /* Chrome all / Safari all */
+        -moz-user-select: none;     /* Firefox all */
+        -ms-user-select: none;
+        user-select: none;
+
+        div {
+          display: inline-block;
+          width: calc(70px/3);
+          height: 25px;
+          margin: 0;
+          margin-left: -4px;
+          padding-top: 2.5px;
+
+          background-color: #fff;
+          border: 1px solid #d1d1d1;
+          box-shadow: none;
+          text-align: center;
+        }
+
+        .minus {
+          background-color: #eee;
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+          border-right: none;
+        }
+
+        .plus {
+          background-color: #eee;
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+          border-left: none;
+        }
+
+        .number {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  /**************
+  ADD-ONS
+  ***************/
+
+  .add-ons {
+    color: #666;
+
+    label {
+      display: inline;
+      line-height: 3rem;
+    }
+  }
+
+  /**************
+  PRINT ATLAS BUTTON
+  ***************/
+
+  #final-step {
+    position: absolute;
+    bottom: 20px;
+    width: 90%;
+    height: 40px;
+    margin-bottom: 5px;
+    padding: 0;
+    background-color: #444;
+    border-color: 1px solid #d1d1d1;
+
     font-size: 1.2rem;
-    //margin-left: 23px;
+    color: $light-grey;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .cancel {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 20px;
+    padding-right: 10%;
+    text-align: right;
+    text-decoration: none;
+  }
+} //end menu
+
+/**************
+FULL-SCREEN MAP
+***************/
+
+#map {
+  width: calc(100vw - 130px);
+  height: 100vh;
+  margin: 0;
+  margin-left: 130px;
+  padding: 0;
+
+ .field-papers-logo {
+    position: fixed;
+    top: 5px;
+    right: 10px;
+    width: 125px;
+    z-index: 2;
+
+    img {
+      width: 125px;
+    }
+  }
 }
 
-.radio-cards .tc:last-child {padding-left: 5px;}
 
-.zoom-reset svg {
-    margin-top: 4px;
-}
+/*******************
+LARGER THAN A TABLET
+********************/
 
-body .select2-container--default .select2-selection--single {
-    height: 38px;
-    padding: 6px 10px;
-    background-color: #fff;
-    border: 1px solid #d1d1d1;
-    border-radius: 4px;
-    box-shadow: none;
-    box-sizing: border-box;
-}
+@media (#{$bp-larger-than-tablet}) {
+  /**************
+  LARGER SIDE MENU
+  ***************/
+  #big-map-menu {
+    width: 225px;
 
-body .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 24px;
-    font-size: 11px;
-}
+    .accordion-header {
 
-body .select2-container--default .select2-selection--single .select2-selection__arrow {
-    top: 50%;
-    transform: translateY(-50%);
-}
+      h5 {
+        font-size: 2rem;
+      }
 
-body .select2-container {
-    width: 180px;
-}
+      .box {
+        margin-top: 5px;
+      }
+    }
 
-body .select2-container *:focus {
-    outline: none;
-}
+    /**************
+    LARGER ACCORDION
+    ***************/
 
-body .select2-container--default .select2-results__option--highlighted[aria-selected] {
-      background-color: #aaa;
-}
+    .accordion {
 
-body .select2-results__option {
-    font-size: 11px;
-    margin-bottom: 1px;
-}
+      .accordion-group {
+        height: 42px;
 
-body .select2-container--default .select2-results > .select2-results__options {
-    max-height: 250px;
-}
+        .box .up-arrow {
+          left: 6px;
+        }
+      }
 
-body .select2-container--default .select2-selection--single .select2-selection__arrow b {
-    border-color: #000 transparent transparent transparent;
-      border-style: solid;
-      border-width: 5px 3px 0 3px;
-      height: 0;
-      left: 50%;
-      margin-left: 0;
-      margin-top: 0px;
-      position: absolute;
-      top: 50%;
-      width: 0;
-      transform: translateX(-50%) translateY(-50%);
-}
-body .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-  border-color: transparent transparent #000 transparent;
-  border-width: 0 3px 5px 3px;
+      .selected {
+        height: calc(100vh - 126px - 40px - 52px);
+      }
+    }
+
+    /***********
+    LARGER GENERIC
+    ************/
+
+    label {
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+    }
+
+    input[type=text] {
+      height: 30px;
+    }
+
+    textarea {
+      margin-bottom: 10px;
+    }
+
+    input {
+      &[type="checkbox"],
+      &[type='text'] {
+        margin-bottom: 10px;
+      }
+    }
+
+    select {
+      margin-bottom: 10px;
+      height: 30px;
+    }
+
+    .tooltips-container {
+      font-size: 1.2rem;
+    }
+
+    /**************
+    LARGER PAGE ORIENTATION AND PAPER SIZE
+    ***************/
+
+    .page-sizing-and-orientation {
+     .page-layout-group {
+        width: 92px;
+      }
+    }
+
+    /**************
+    LARGER ROW AND COL MODIFIERS
+    ***************/
+    .col-row-modifiers-group {
+      margin-bottom: 10px;
+    }
+
+    /**************
+    LARGER PRINT ATLAS BUTTON
+    ***************/
+    #final-step {
+      bottom: 25px;
+      width: 80%;
+      margin-left: 10%;
+    }
+
+    .cancel {
+      height: 30px;
+    }
+
+    #final-step,
+    .cancel {
+      font-size: 1.5rem;
+    }
+  }
+
+  #map {
+    margin-left: 225px;
+    width: calc(100vw - 225px);
+
+    .field-papers-logo, .field-papers-logo img {
+      width: 175px;
+    }
+  }
 }
