@@ -36,7 +36,16 @@ Rails.application.routes.draw do
 
   get '/compose' => 'compose#new', as: :compose
   post '/compose' => 'compose#create'
-  
+
+  get '/compose1' => 'compose1#new', as: :compose1
+  post '/compose1' => 'compose1#create'
+
+  get '/compose2' => 'compose2#new', as: :compose2
+  post '/compose2' => 'compose2#create'
+
+  get '/compose3' => 'compose3#new', as: :compose3
+  post '/compose3' => 'compose3#create'
+
   resources :snapshots, :concerns => :pageable
 
   mount Rack::NotFound.new("public/404.html") => "activity.php"

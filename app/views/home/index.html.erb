@@ -3,11 +3,33 @@
 </div>
 
 <div class="row cards">
+  <div class="ten columns card standout-card offset-by-one">
+    <div class="card-details">
+      <h5 class="card-title"><%= _("Field Papers UI Community Survey") %></h5>
+      <p><%= _("We're working on improving the user interface for making atlases in Field Papers.  To do that, we need your help!  We've changed the old 'wizard' interface for making atlases into a single page map-based view.  We think it looks good, but there are some things we're unsure about.  That's where you come in.  We'd like to ask you to do three things:") %></p>
+
+      <ol>
+        <li><%= _("Look at some mock-ups of the proposed layout of user interface elements on the new atlas composition page: ") %><a href="#"><%= _("LINK HERE") %></a></li>
+        <li><%= _("Experiment with three options for the atlas grid user interface: these are available under below: go to ") %><strong><%= _("Make yourself an atlas") %></strong></li>
+        <li><%= _("Fill in a survey giving your opinions about the different options and any other comments you might have: ") %><a href="#"><%= _("LINK HERE") %></a></li>
+      </ol>
+
+      <br>
+      <p class="card-desc"><strong><%= _("Thanks a lot for your help!") %></strong></p>
+    </div>
+  </div>
+</div>
+<div class="row cards">
     <div class="four columns card">
-        <a class="card-image" data-no-turbolink="true" href="<%= compose_path %>"><img src="<%= asset_path 'atlases-large.gif' %>" alt="<%= _("Hand-drawn graphic to represent making a Field Papers atlas") %>"></a>
+      <img class="card-image" src="<%= asset_path 'atlases-large.gif' %>" alt="<%= _("Hand-drawn graphic to represent making a Field Papers atlas") %>">
         <div class="card-details">
-            <h5 class="card-title" data-no-turbolink="true"><%= link_to _("Make yourself an atlas"), compose_path %></h5>
+            <h5 class="card-title" data-no-turbolink="true"><%= _("Make yourself an atlas") %></h5>
             <p class="card-desc"><%= _("Print out anywhere in the world.") %></p>
+
+            <p class="compose-option"><%= link_to _("Option #1"), compose1_path %></p>
+            <p class="compose-option"><%= link_to _("Option #2"), compose2_path %></p>
+            <p class="compose-option"><%= link_to _("Option #3"), compose3_path %></p>
+            </ul>
         </div>
     </div>
 
