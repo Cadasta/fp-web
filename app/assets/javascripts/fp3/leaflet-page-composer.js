@@ -34,7 +34,9 @@ L.PageComposer = L.Class.extend({
       rows: 1,
       cols: 2,
       prevRows: 1,
-      prevCols: 2
+      prevCols: 2,
+      locked: false,
+      was_locked: false
     },
 
     initialize: function(options) {
@@ -94,7 +96,35 @@ L.PageComposer = L.Class.extend({
       var sw = this.map.containerPointToLatLng(bottomLeft);
       var ne = this.map.containerPointToLatLng(topRight);
 
+      this._updateNWPosition();
       return new L.LatLngBounds(sw, ne);
+    },
+
+    _getBoundsPinToNorthWest: function() {
+      var size = this.map.getSize();
+      var topRight = new L.Point();
+      var bottomLeft = new L.Point();
+
+      var nwPoint = this.map.latLngToContainerPoint(this.nwLocation);
+
+      topRight.y = nwPoint.y;
+      bottomLeft.y = nwPoint.y + this.dimensions.height;
+      bottomLeft.x = nwPoint.x;
+      topRight.x = nwPoint.x + this.dimensions.width;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      return new L.LatLngBounds(sw, ne);
+    },
+
+    _updateNWPosition: function() {
+      var size = this.map.getSize();
+
+      var topBottomHeight = Math.round((size.y-this.dimensions.height)/2);
+      var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
+      this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
+      this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
     },
 
     _updateLocation: function(location){
@@ -109,6 +139,14 @@ L.PageComposer = L.Class.extend({
             [latlngPoints[1],latlngPoints[3]]
           ]);
 
+          if (self.refs.locked){
+            //uncheck the "pin to nw corner" box
+            document.getElementById('map-lock-box').childNodes[1].checked = false;
+
+            self.refs.locked = false;
+            self._render();
+          }
+          
           self._updateToolDimensions();
           self.fire("change");
         }
@@ -193,7 +231,11 @@ L.PageComposer = L.Class.extend({
       // make sure it fits on the screen.
       this._updateToolDimensions();
       // re-calc bounds
-      this.bounds = this._getBoundsPinToCenter();
+      if (this.refs.locked){
+        this.bounds = this._getBoundsPinToNorthWest();
+      } else {
+        this.bounds = this._getBoundsPinToCenter();
+      }
       this._render();
     },
 
@@ -230,14 +272,19 @@ L.PageComposer = L.Class.extend({
       }
       */
 
+      if (!this.refs.locked){
+        if (this.dimensions.height > size.y - 60 || this.dimensions.height < size.y - 70 ) {
+          this.dimensions.height = size.y - 60;
+          this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+        }
+        if (this.dimensions.width > size.x - 60 || this.dimensions.width < size.x - 70 && !this.dimensions.height > size.y - 60 ) {
+          this.dimensions.width = size.x - 60;
+          this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        }
 
-      if (this.dimensions.height > size.y - 60 || this.dimensions.height < size.y - 70 ) {
-        this.dimensions.height = size.y - 60;
-        this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-      }
-      if (this.dimensions.width > size.x - 60 || this.dimensions.width < size.x - 70 && !this.dimensions.height > size.y - 60 ) {
-        this.dimensions.width = size.x - 60;
-        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        this.bounds = this._getBoundsPinToCenter();
+      } else {
+        this.bounds = this._getBoundsPinToNorthWest();
       }
 
 
@@ -248,7 +295,7 @@ L.PageComposer = L.Class.extend({
       count[0].textContent = this.refs.cols;
       count[1].textContent = this.refs.rows;
 
-      this.bounds = this._getBoundsPinToCenter();
+      
       this._render();
     },
 
@@ -346,6 +393,7 @@ L.PageComposer = L.Class.extend({
         this._calculateInitialPositions();
         this._setDimensions();
         this._createPages();
+        this._onMapLock();
         this._onSearch();
 
         this.map.on("move",     this._onMapMovement, this);
@@ -413,17 +461,27 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapMovement: function(){
-        this.bounds = this._getBoundsPinToCenter();
+      if (this.refs.locked){
         this._render();
+      } else {
+        this.bounds = this._getBoundsPinToCenter();
+      }
         this.fire("change");
     },
 
     _onMapReset: function() {
+      if (this.refs.locked || this.refs.was_locked) {
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+        this._render();
+        this.refs.was_locked = false;
+      }
       this.fire("change");
     },
 
     _onMapResize: function() {
-        //this._render();
+      if (this.refs.locked){
+        this._render();
+      }
     },
 
     _onMapChange: function() {
@@ -476,7 +534,11 @@ L.PageComposer = L.Class.extend({
       this._scaleProps.curX = event.originalEvent.pageX;
       this._scaleProps.curY = event.originalEvent.pageY;
 
-      this.bounds = this._getBoundsPinToCenter();
+      if (this.refs.locked){
+        this.bounds = this._getBoundsPinToNorthWest();
+      } else {
+        this.bounds = this._getBoundsPinToCenter();
+      }
       this._setDimensions();
       this._render();
     },
@@ -523,6 +585,23 @@ L.PageComposer = L.Class.extend({
         L.DomEvent.preventDefault(e);
         self._updateLocation(form.searchBox.value);
         }, self);
+    },
+
+    _onMapLock: function(){
+      var mapLockStatus = document.getElementById('map-lock-box').childNodes[1];
+      var self = this;
+
+      L.DomEvent.addListener(mapLockStatus, "change", function(){
+        self.refs.was_locked = self.refs.locked ? true : false;
+        self.refs.locked = mapLockStatus.checked;
+
+        if (!self.refs.locked){
+          self.map.fitBounds(self.bounds, {animation: false});
+
+          self._render();
+          self.fire("change");
+        }
+      });
     },
 
     _render: function() {

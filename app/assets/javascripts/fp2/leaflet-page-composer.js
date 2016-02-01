@@ -34,7 +34,8 @@ L.PageComposer = L.Class.extend({
       rows: 1,
       cols: 2,
       prevRows: 1,
-      prevCols: 2
+      prevCols: 2,
+      searching: false
     },
 
     initialize: function(options) {
@@ -102,6 +103,8 @@ L.PageComposer = L.Class.extend({
       var xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function(){
         if (xhr.readyState === 4 && xhr.status === 200){
+          self.refs.searching = true;
+
           var latlngPoints = JSON.parse(xhr.responseText)[0].boundingbox;
 
           self.map.fitBounds([
@@ -211,7 +214,6 @@ L.PageComposer = L.Class.extend({
 
     _updateToolDimensions: function() {
       var size = this.map.getSize();
-      //to update the numbers displayed in the side menu
       var count = document.getElementsByClassName("number");
 
       var width = this.dimensions.width / this.refs.prevCols;
@@ -219,34 +221,22 @@ L.PageComposer = L.Class.extend({
 
       this.dimensions.width = width * this.refs.cols;
       this.dimensions.height = height * this.refs.rows;
-      /* ALTERNATE CODE TO KEEP GRID AS BIG AS POSSIBLE AT ALL TIMES. DELETE LINES 223 - 230
+
       if (this.dimensions.height > size.y - 40) {
-        this.dimensions.height = size.y - 40;
-        this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
+        this.map.zoomOut();
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
       }
+
       if (this.dimensions.width > size.x - 40) {
-        this.dimensions.width = size.x - 40;
-        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+        this.map.zoomOut();
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
       }
-      */
-
-
-      if (this.dimensions.height > size.y - 60 || this.dimensions.height < size.y - 70 ) {
-        this.dimensions.height = size.y - 60;
-        this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-      }
-      if (this.dimensions.width > size.x - 60 || this.dimensions.width < size.x - 70 && !this.dimensions.height > size.y - 60 ) {
-        this.dimensions.width = size.x - 60;
-        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
-      }
-
-
-
+      
       this.refs.prevCols = this.refs.cols;
       this.refs.prevRows = this.refs.rows;
-
-      count[0].textContent = this.refs.cols;
-      count[1].textContent = this.refs.rows;
+      
+      count[1].textContent = this.refs.cols;
+      count[0].textContent = this.refs.rows;
 
       this.bounds = this._getBoundsPinToCenter();
       this._render();
@@ -419,6 +409,13 @@ L.PageComposer = L.Class.extend({
     },
 
     _onMapReset: function() {
+      if (!this.refs.searching){
+        this.refs.zoomScale = 1 / this.map.getZoomScale(this.refs.startZoom);
+        this._render();
+      } else {
+        this.refs.searching = false;
+      }
+
       this.fire("change");
     },
 
