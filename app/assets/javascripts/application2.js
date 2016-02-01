@@ -17,4 +17,7 @@
 //= requite mapbox.js
 //= require_directory ./fp2
 //= require turbolinks
-//= require_tree .
+//= require_directory ./fp2/map
+//= require_directory ./leaflet
+//= require_directory ./tmp-non-fp
+//= require_directory ./vendor
