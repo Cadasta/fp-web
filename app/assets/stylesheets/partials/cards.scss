@@ -83,3 +83,19 @@
   .card-desc {
     margin: 0;
   }
+
+.standout-card {
+  margin-bottom: 50px;
+  border: 2px solid lightgrey;
+  padding: 10px;
+
+  ol {
+    text-align: left;
+    margin: 0px 50px;
+    list-style-position: outside;
+  }
+}
+
+p.compose-option {
+  margin: 0;
+}
