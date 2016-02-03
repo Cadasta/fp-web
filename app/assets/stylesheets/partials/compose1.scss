@@ -450,6 +450,16 @@ FULL-SCREEN MAP
       width: 125px;
     }
   }
+
+  .option-one {
+    position: fixed;
+    bottom: 20px;
+    right: 35%;
+    font-size: 5rem;
+    font-weight: 200;
+    z-index: 2;
+    pointer-events: none;
+  }
 }
 
 
