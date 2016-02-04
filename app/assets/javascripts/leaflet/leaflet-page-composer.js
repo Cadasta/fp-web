@@ -59,9 +59,15 @@ L.PageComposer = L.Class.extend({
       //this.map.off("zoomend", this._onMapChange);
       this.map.off("resize", this._onMapResize);
 
-      if (this._scaleHandle) L.DomEvent.removeListener(this._scaleHandle, "mousedown", this._onScaleMouseDown);
-      
-      this._container.parentNode.removeChild(this._container);
+      bottomLeft.x = Math.round((size.x - this.dimensions.width) / 2);
+      topRight.y = Math.round((size.y - this.dimensions.height) / 2);
+      topRight.x = size.x - bottomLeft.x;
+      bottomLeft.y = size.y - topRight.y;
+
+      var sw = this.map.containerPointToLatLng(bottomLeft);
+      var ne = this.map.containerPointToLatLng(topRight);
+
+      return new L.LatLngBounds(sw, ne);
     },
 
     //all the same
@@ -239,6 +245,11 @@ L.PageComposer = L.Class.extend({
         this.dimensions.width = size.x - 60;
         this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
       }
+      if (this.dimensions.width > size.x - 40) {
+        this.dimensions.width = size.x - 40;
+        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
+      }
+      */
 
 
 
