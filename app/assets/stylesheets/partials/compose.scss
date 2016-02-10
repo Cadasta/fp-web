@@ -163,6 +163,7 @@ SIDE MENU
     $arrow-width-after: 10px solid transparent;
 
     width: 100%;
+    padding: 0 5px;
     border-bottom: 2px solid $light-grey;
     cursor: pointer;
 
@@ -206,7 +207,7 @@ SIDE MENU
         }
 
         .up-arrow {
-          left: 3px;
+          margin-right: 20px;
           margin-top: 9px;
           border-bottom: $arrow-height;
         }
@@ -253,8 +254,8 @@ SIDE MENU
       }
     }
 
-    .selected {
-      width: 97%;
+    .selected-group {
+      width: 100%;
       height: calc(100vh - 93px - 40px - 34px);
       border-bottom: 2px solid $light-grey;
       overflow: hidden;
@@ -276,8 +277,14 @@ SIDE MENU
     border-right: none;
 
     .map-location-search-box {
+      background-image: image-url('search-24x24.png');
+      background-size: 20px;
+      background-repeat: no-repeat;
+      background-position: 3px 3px;
+      padding-left:30px;
       width: 90%;
       margin: 5%;
+      font-size: 1.5rem;
     }
 
     .map-location-search-button {
@@ -307,6 +314,9 @@ SIDE MENU
   BASEMAP OPTIONS
   ***************/
 
+    .select2-dropdown {
+      
+    }
 
   /**************
   PAGE ORIENTATION AND PAPER SIZE
@@ -330,6 +340,7 @@ SIDE MENU
   .col-row-modifiers {
     width: 130px;
     align-items: left;
+    margin-left: 5px;
 
     .col-row-modifiers-group {
       width: 112px;
@@ -489,7 +500,7 @@ LARGER THAN A TABLET
         }
       }
 
-      .selected {
+      .selected-group {
         height: calc(100vh - 126px - 40px - 52px);
       }
     }

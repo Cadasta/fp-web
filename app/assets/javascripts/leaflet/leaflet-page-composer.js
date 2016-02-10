@@ -249,9 +249,6 @@ L.PageComposer = L.Class.extend({
         this.dimensions.width = size.x - 40;
         this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
       }
-      */
-
-
 
       this.refs.prevCols = this.refs.cols;
       this.refs.prevRows = this.refs.rows;
