@@ -43,7 +43,7 @@
             </div>
             <div class="private-map">
               <%= f.check_box :private %>
-              <%= f.label :private, _("Private") %>
+              <%= f.label :private, _("Keep atlas private") %>
               <div class='tooltips-container'><div data-tooltip="Private atlases can only be accessed if you're logged in, or via a URL provided to you in the final step." class="tooltips">(?)</div></div>
             </div>
 
@@ -70,27 +70,7 @@
           <%= f.label :provider, _("Basemap") %>
           <%= f.select :provider, options_for_select(Providers.options, [Providers.default]) %>
 
-      <div class='col-row-modifiers'>
-
-        <div class="col-row-modifiers-group">
-          <%= f.label :col, _("Column") %>
-          <div class="grid-modifier-group">
-            <div class="grid-modifier minus">-</div>
-            <div class="grid-modifier number">2</div>
-            <div class="grid-modifier plus">+</div>
-          </div> <!-- grid-modifier-group -->
-        </div> <!-- col-row-modifier-group -->
-
-        <div class="col-row-modifiers-group">
-          <%= f.label :row, _("Row") %>
-          <div class="grid-modifier-group">
-        	  <div class="grid-modifier minus">-</div>
-            <div class="grid-modifier number">1</div>
-            <div class="grid-modifier plus">+</div>
-          </div> <!-- grid-modifier-group -->
-        </div> <!-- col-row-modifier-group -->
-
-      </div> <!-- col-row-modifiers -->
+      
       </div>
       </div>
 
@@ -118,7 +98,29 @@
     <div class="field-papers-logo">
       <%= image_tag "logo-header.png" %>
     </div>
-  </div>
+
+  <div class='col-row-modifiers'>
+
+    <div class="col-row-modifiers-group">
+      
+      <div class="grid-modifier-group">
+        <div class="grid-modifier minus">-</div>
+        <div class="grid-modifier number">2</div>
+        <div class="grid-modifier plus">+</div>
+      </div> <!-- grid-modifier-group -->
+    </div> <!-- col-row-modifier-group -->
+
+    <div class="col-row-modifiers-group">
+      
+      <div class="grid-modifier-group">
+        <div class="grid-modifier minus">-</div>
+        <div class="grid-modifier number">1</div>
+        <div class="grid-modifier plus">+</div>
+      </div> <!-- grid-modifier-group -->
+    </div> <!-- col-row-modifier-group -->
+
+  </div> <!-- col-row-modifiers -->
+</div><!-- map -->
 
 <% content_for :foot do %>
 
