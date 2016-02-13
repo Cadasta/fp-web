@@ -9,88 +9,89 @@
           </form>
         </div>
 
-      <!-- BEGINNING OF ACCORDION -->
-      <div class='accordion'>
-        <div class="accordion-group selected-group">
-        <div class="atlas-location-and-name">
-        <div class="accordion-header">
-          <h5>Atlas Information</h5>
-          <div class='box'>
-            <div class='up-arrow'></div>
-          </div>
-        </div>
-        <div class="accordion-body">
-
+      <!-- BEGINNING OF TABS -->
+      <div class='menu-tabs'>
         <%= form_for :atlas do |f| %>
-          <%= f.hidden_field :zoom, :value => @atlas.zoom %>
-          <%= f.hidden_field :west, :value => @atlas.west %>
-          <%= f.hidden_field :south, :value => @atlas.south %>
-          <%= f.hidden_field :east, :value => @atlas.east %>
-          <%= f.hidden_field :north, :value => @atlas.north %>
-          <%= f.hidden_field :rows, :value => @atlas.rows %>
-          <%= f.hidden_field :cols, :value => @atlas.cols %>
+        <input type='radio' name='tabs' id='tab1' class='menu-tabs-input' checked='checked'>
+          <label for='tab1' class='menu-tabs-label'>
+            <div>Atlas Info</div>
+          </label>
+        <div id="tab-content1" class='tab-content'>
+          <div class="atlas-location-and-name">
+          
+            <%= f.hidden_field :zoom, :value => @atlas.zoom %>
+            <%= f.hidden_field :west, :value => @atlas.west %>
+            <%= f.hidden_field :south, :value => @atlas.south %>
+            <%= f.hidden_field :east, :value => @atlas.east %>
+            <%= f.hidden_field :north, :value => @atlas.north %>
+            <%= f.hidden_field :rows, :value => @atlas.rows %>
+            <%= f.hidden_field :cols, :value => @atlas.cols %>
 
-          <div id="printing-information">
-            <%= f.label :title, _("Name your atlas") %>
-            <%= f.text_field :title %>
-            <%= f.label :text, _("Notes") %>
-            <%= f.text_area :text %>
+            <div id="printing-information">
+              <%= f.label :title, _("Name your atlas") %>
+              <%= f.text_field :title %>
+              <%= f.label :text, _("Notes") %>
+              <%= f.text_area :text %>
 
-            <div class="include-notes">
-              <%= f.check_box :layout %>
-              <%= f.label :layout, _("Print Notes") %>
-              <div class='tooltips-container'><div data-tooltip="If you choose to include notes, your map will be printed on the top half a page with notes displayed on the bottom half. Otherwise, maps will be displayed on a full page." class="tooltips">(?)</div></div>
-            </div>
-            <div class="private-map">
-              <%= f.check_box :private %>
-              <%= f.label :private, _("Keep atlas private") %>
-              <div class='tooltips-container'><div data-tooltip="Private atlases can only be accessed if you're logged in, or via a URL provided to you in the final step." class="tooltips">(?)</div></div>
-            </div>
+              <div class="include-notes">
+                <%= f.check_box :layout %>
+                <%= f.label :layout, _("Print Notes") %>
+                <div class='tooltips-container'><div data-tooltip="If you choose to include notes, your map will be printed on the top half a page with notes displayed on the bottom half. Otherwise, maps will be displayed on a full page." class="tooltips">(?)</div></div>
+              </div>
+              <div class="private-map">
+                <%= f.check_box :private %>
+                <%= f.label :private, _("Keep atlas private") %>
+                <div class='tooltips-container'><div data-tooltip="Private atlases can only be accessed if you're logged in, or via a URL provided to you in the final step." class="tooltips">(?)</div></div>
+              </div>
 
-          </div>
-          </div> <!-- atlas-location-and-name -->
-          </div>
-          </div>
+            </div><!-- printing-information -->
+          </div><!-- atlas-location-and-name -->
+        </div><!-- tab-content -->
+           
 
-          <div class="accordion-group">
-          <div class="accordion-header"><h5>Grid Layout</h5><div class='box'>
-  <div class='down-arrow'></div>
-</div></div>
-          <div class="accordion-body">
+        <input type='radio' name='tabs' id='tab2' class='menu-tabs-input'>
+        <label for='tab2' class='menu-tabs-label'>
+          <div>Grid Layout</div>
+        </label>
+
+        <div id="tab-content2" class='tab-content'>
           <div class="page-sizing-and-orientation" id='page-layout'>
             <div class="page-layout-group">
               <%= f.label :paper_size, _("Paper Size") %>
               <%= f.select :paper_size, options_for_select([["Letter", "letter"], ["A3", "a3"], ["A4", "a4"]]) %>
-            </div>
+            </div><!--page-layout-group-->
             <div class="page-layout-group">
               <%= f.label :orientation, _("Orientation") %>
               <%= f.select :orientation, options_for_select([["Landscape", "landscape"], ["Portrait", "portrait"]]) %>
-            </div>
-          </div>
+            </div><!--page-layout-group-->
+          </div><!--page-sizing-and-orientation-->
           <%= f.label :provider, _("Basemap") %>
           <%= f.select :provider, options_for_select(Providers.options, [Providers.default]) %>
 
-      
-      </div>
-      </div>
+        </div><!--tab-content-->
 
-      <div class="accordion-group">
-      <div class="accordion-header"><h5>Add - ons</h5><div class='box'>
-  <div class='down-arrow'></div>
-</div></div>
-      <div class="accordion-body">
-      <div class="add-ons">
-        <%= f.check_box :utm_grid%>
-        <%= f.label :utm_grid, _("UTM Grid")  %><div class='tooltips-container'><div data-tooltip="Click for more information." class="tooltips">(<a href="https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system" target="_blank">?</a>)</div></div> <br />
+        <input type='radio' name='tabs' id='tab3' class='menu-tabs-input'>
+        <label for='tab3' class='menu-tabs-label'>
+          <div>Add-ons</div>
+        </label>
 
-      </div>
-      </div>
-      </div>
-    </div>
+        <div id="tab-content3" class='tab-content'>
+          <div class="add-ons">
+            <%= f.check_box :utm_grid%>
+            <%= f.label :utm_grid, _("UTM Grid")  %>
+
+            <div class='tooltips-container'>
+              <div data-tooltip="Click for more information." class="tooltips">(<a href="https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system" target="_blank">?</a>)</div>
+            </div> <!--tooltips-container-->
+
+            <br />
+          </div><!--add-ons-->
+        </div><!--tab-content-->
+      </div><!--menu-tabs-->
+
       <%= f.submit _("Make Atlas"), {:id => "final-step"} %>
       <% end %>
       <%= link_to _("Cancel"),  root_path, :method => :get, :class => 'cancel'%>
-
 
   </div><!-- menu -->
 

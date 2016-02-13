@@ -18,6 +18,14 @@ MIX-INS
   display: -webkit-flex;
 }
 
+@mixin vendor($name, $argument) {
+  #{$name}: $argument;
+  -webkit-#{$name}: $argument;
+  -ms-#{$name}: $argument;
+  -moz-#{$name}: $argument;
+  -o-#{$name}: $argument;
+}
+
 /**********
 GENERAL FOR COMPOSE
 ***********/
@@ -62,13 +70,16 @@ SIDE MENU
   border: 2px solid #eee;
   border-top: none;
 
+  list-display: none;
+
   form {
     margin-bottom: 0;
   }
 
   label {
-    font-size: 1rem;
-    margin-bottom: 2px;
+    font-size: 1.2rem;
+    margin-bottom: 1px;
+    margin-top: 10px;
   }
 
   input[type=text] {
@@ -147,123 +158,72 @@ SIDE MENU
   }
 
   /****************
-  MENU LABELS AND ARROWS
+  MENU TABS
   *****************/
 
-  label {
-      color: #444;
-      font-weight: 400;
-  }
-
-  .accordion-header {
-    $arrow-height: 10px solid $dark-grey;
-    $arrow-width: 5px solid transparent;
-    $arrow-height-after: 15px solid white;
-    $arrow-width-after: 10px solid transparent;
-
-    width: 100%;
-    padding: 0 5px;
-    border-bottom: 2px solid $light-grey;
+  .menu-tabs-label {
+    background-color: white;
+    color: $light-grey;
+    box-shadow: inset 3px 4px 5px $light-grey;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+    font-weight: 300;
+    text-align: center;
     cursor: pointer;
-
-    h5 {
-      display: inline-block;
-      margin: 5px;
-      font-size: 1.5rem;
+  
+    &:hover {
+      color: $link-color;
     }
-
-    .box {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      float: right;
-
-        .down-arrow, .up-arrow {
-          position: relative;
-          width: 0;
-          height: 0;
-          margin: 0 auto;
-          margin-top: 10px;
-          border-right: $arrow-width;
-          border-left: $arrow-width;
-          transition: all .2s;
-          -webkit-transition: all .2s; /* Safari */
-        }
-
-        .down-arrow::after, .up-arrow::after {
-          position: absolute;
-          left: -10px;
-          border-right: $arrow-width-after;
-          border-left: $arrow-width-after;
-          content: "";
-          z-index: 1;
-        }
-
-        .down-arrow {
-          border-top: $arrow-height;
-        }
-
-        .up-arrow {
-          margin-top: 9px;
-          border-bottom: $arrow-height;
-        }
-
-        .down-arrow::after {
-          top: -18px;
-          border-top: $arrow-height-after;
-        }
-
-        .up-arrow::after {
-          bottom: -18px;
-          left: -10px;
-          border-bottom: $arrow-height-after;
-        }
-      }
   }
 
-  /**************
-  ACCORDION
-  ***************/
-  .accordion {
+  .menu-tabs {
+    position: relative;
+    .menu-tabs-input {
+      display: none;
+    }
 
-    a {
-      text-decoration: none;
-      color: $font-color;
-
-      &:hover {
-        color: $secondary-color;
+    .menu-tabs-label {
+      width: 30px;
+      height: 90px;
+      margin-left: 156px;
+      z-index: 7;
+      margin-top: 40px;
+      margin-bottom: -40px;
+      display: block;
+      padding-top: 35px;
+      -webkit-trasition: color 0.3s linear;
+      transition: color 0.3s linear;
+      
+      div {
+        transform: rotate(90deg);
+        width: 140px;
+        margin-left: -55px;
       }
     }
+  }
 
-    .accordion-body {
-      padding: 10px;
-      padding-top: 0;
-    }
+  [id^='tab']:checked + label {
+    color: $link-color;
+    box-shadow: 2px -3px 5px $light-grey;
+  }
 
-    .accordion-group {
-      height: 34px;
-      overflow: hidden;
-      transition: height .5s ease-out;
-      -webkit-transition: height .5s ease-out; /* Safari */
-
-      h5 {
-        position: relative;
-      }
-    }
-
-    .selected-group {
-      width: 100%;
-      // height: calc(100vh - 93px - 40px - 34px);
-      height: 242px;
-      border-bottom: 2px solid $light-grey;
-      overflow: hidden;
-
-      .accordion-header {
-        border: none;
-      }
-    }
+  .tab-content {
+    position: absolute;
+    width: 150px;
+    left: -225px;
+    top: 10px;
+    opacity: 0;
+    @include vendor(transition, all 0.3s ease-in-out);
+  }
+  
+  #tab1:checked ~ #tab-content1,
+  #tab2:checked ~ #tab-content2,
+  #tab3:checked ~ #tab-content3 {
+    left: 10px;
+    opacity: 1;
   }
 
   /****************
@@ -312,6 +272,10 @@ SIDE MENU
   .include-notes {
     margin-top: -5px;
     margin-bottom: 15px;
+  }
+
+  .private-map {
+    font-size: 1rem;
   }
 
 
@@ -412,6 +376,7 @@ FULL-SCREEN MAP
 
 #map {
   width: calc(100vw - 160px);
+  position: fixed;
   height: 100vh;
   margin: 0;
   margin-left: 160px;
@@ -513,6 +478,7 @@ LARGER THAN A TABLET
   ***************/
   #big-map-menu {
     width: 225px;
+    background-color: white;
 
     .accordion-header {
 
@@ -587,6 +553,88 @@ LARGER THAN A TABLET
       }
     }
 
+    /****************
+    MENU TABS
+    *****************/
+
+    .menu-tabs-label {
+      background-color: white;
+
+      box-shadow: inset 3px 4px 5px $light-grey;
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+
+      text-transform: uppercase;
+      font-size: 1.4rem;
+      font-family: sans-serif;
+      font-weight: 300;
+      color: $light-grey;
+
+      cursor: pointer;
+    
+      &:hover {
+        color: $link-color;
+      }
+    }
+
+    .menu-tabs {
+      position: relative;
+      .menu-tabs-input {
+        display: none;
+      }
+
+      .menu-tabs-label {
+        width: 30px;
+        height: 110px;
+        margin-left: 220px;
+        z-index: 7;
+        margin-top: 20px;
+        margin-bottom: -20px;
+        display: block;
+        padding-top: 45px;
+        
+        div {
+          transform: rotate(90deg);
+          width: 140px;
+          margin-left: -55px;
+        }
+      }
+    }
+
+    .tab-content {
+      position: absolute;
+      width: 200px;
+      left: -225px;
+      top: 10px;
+      opacity: 0;
+      @include vendor(transition, all 0.3s ease-in-out);
+    }
+    
+    #tab1:checked ~ #tab-content1,
+    #tab2:checked ~ #tab-content2,
+    #tab3:checked ~ #tab-content3 {
+      left: 20px;
+      opacity: 1;
+    }
+
+
+  /******************
+  Extra styling choices
+  ******************/
+
+
+    .menu-tabs-label {
+        
+      
+        
+    }
+    
+    
+    [id^='tab']:checked + label {
+      color: $link-color;
+      box-shadow: 3.5px -3px 5px $light-grey;
+    }
+
     /**************
     LARGER PAGE ORIENTATION AND PAPER SIZE
     ***************/
@@ -628,8 +676,10 @@ LARGER THAN A TABLET
   }
 
   #map {
-    margin-left: 225px;
+    margin-left: 223px;
     width: calc(100vw - 225px);
+    top: 0;
+    left: 0;
 
     .field-papers-logo, .field-papers-logo img {
       width: 175px;
