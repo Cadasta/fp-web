@@ -79,7 +79,6 @@ SIDE MENU
   label {
     font-size: 1.2rem;
     margin-bottom: 1px;
-    margin-top: 10px;
   }
 
   input[type=text] {
@@ -92,12 +91,14 @@ SIDE MENU
     width: 90%;
     max-width: 90%;
     margin: 0;
+    margin-bottom: 10px;
   }
 
   input {
     &[type="checkbox"],
     &[type='text'] {
       margin: 0;
+      margin-bottom: 10px;
     }
   }
 
@@ -105,6 +106,7 @@ SIDE MENU
     width: 90%;
     padding: 0;
     margin: 0;
+    margin-bottom: 10px;
     height: 20px;
     font-size: 1rem;
   }
@@ -162,14 +164,16 @@ SIDE MENU
   *****************/
 
   .menu-tabs-label {
+    margin-top: 0;
     background-color: white;
-    box-shadow: inset 3px 4px 5px $light-grey;
+    border: 1px solid $light-grey;
+
     border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-left-radius: 4px;
+
     text-transform: uppercase;
-    font-size: 1.2rem;
-    font-family: sans-serif;
-    font-weight: 300;
+    font-size: 1rem;
+
     text-align: center;
     cursor: pointer;
   
@@ -185,37 +189,42 @@ SIDE MENU
     }
 
     .menu-tabs-label {
-      width: 30px;
-      height: 90px;
-      margin-left: 156px;
+      width: calc(145px/3);
+      margin: 0;
+      padding: 8px 0;
+      display: inline-block;
       z-index: 7;
-      margin-top: 40px;
-      margin-bottom: -40px;
-      display: block;
-      padding-top: 35px;
       -webkit-trasition: color 0.3s linear;
       transition: color 0.3s linear;
+      margin-right: -4px;
       
-      div {
-        transform: rotate(90deg);
-        width: 140px;
-        margin-left: -55px;
-      }
+    }
+
+    label[for='tab3'] {
+      width: 60px;
     }
   }
 
+  
+
   [id^='tab']:checked + label {
     color: $link-color;
-    box-shadow: 2px -3px 5px $light-grey;
+    border-bottom: none;
+    // box-shadow: 2px -3px 5px $light-grey;
   }
 
   .tab-content {
     position: absolute;
     width: 150px;
     left: -225px;
-    top: 10px;
+    top: 50px;
     opacity: 0;
     @include vendor(transition, all 0.3s ease-in-out);
+
+    div {
+      margin: 0;
+      padding: 0;
+    }
   }
   
   #tab1:checked ~ #tab-content1,
@@ -269,8 +278,8 @@ SIDE MENU
   }
 
   .include-notes {
-    margin-top: -5px;
-    margin-bottom: 15px;
+    margin-top: -15px !important;
+    margin-bottom: 25px !important;
   }
 
   .private-map {
@@ -328,6 +337,7 @@ SIDE MENU
   ***************/
 
   .add-ons {
+    padding-top: 25px;
     color: #666;
 
     label {
@@ -380,6 +390,7 @@ FULL-SCREEN MAP
   margin: 0;
   margin-left: 160px;
   padding: 0;
+  top: 0;
 
  .field-papers-logo {
     position: fixed;
@@ -490,22 +501,6 @@ LARGER THAN A TABLET
       }
     }
 
-    /**************
-    LARGER ACCORDION
-    ***************/
-
-    .accordion {
-
-      .accordion-group {
-        height: 42px;
-      }
-
-      .selected-group {
-        // height: calc(100vh - 126px - 40px - 52px);
-        height: 300px;
-      }
-    }
-
     /***********
     LARGER GENERIC
     ************/
@@ -513,25 +508,14 @@ LARGER THAN A TABLET
     label {
       font-size: 1.4rem;
       margin-bottom: 2px;
+      margin-top: 0;
     }
 
     input[type=text] {
       height: 30px;
     }
 
-    textarea {
-      margin-bottom: 10px;
-    }
-
-    input {
-      &[type="checkbox"],
-      &[type='text'] {
-        margin-bottom: 10px;
-      }
-    }
-
     select {
-      margin-bottom: 10px;
       height: 30px;
     }
 
@@ -556,66 +540,27 @@ LARGER THAN A TABLET
     LARGER MENU TABS
     *****************/
 
-    .menu-tabs-label {
-      font-size: 1.4rem;
-    }
-
     .menu-tabs {
-      position: relative;
-      .menu-tabs-input {
-        display: none;
+      .menu-tabs-label {
+        width: calc(220px/3);
+        padding: 8px 0;
+        margin-right: -3px;
+        font-size: 1.2rem;
       }
 
-      .menu-tabs-label {
-        width: 30px;
-        height: 110px;
-        margin-left: 222px;
-        z-index: 7;
-        margin-top: 20px;
-        margin-bottom: -20px;
-        display: block;
-        padding-top: 45px;
-        
-        div {
-          transform: rotate(90deg);
-          width: 140px;
-          margin-left: -55px;
-        }
+      label[for='tab3']{
+        width: calc(220px/3);
       }
     }
 
     .tab-content {
-      position: absolute;
       width: 200px;
-      left: -225px;
-      top: 10px;
-      opacity: 0;
-      @include vendor(transition, all 0.3s ease-in-out);
     }
-    
+
     #tab1:checked ~ #tab-content1,
     #tab2:checked ~ #tab-content2,
     #tab3:checked ~ #tab-content3 {
       left: 20px;
-      opacity: 1;
-    }
-
-
-  /******************
-  Extra styling choices
-  ******************/
-
-
-    .menu-tabs-label {
-        
-      
-        
-    }
-    
-    
-    [id^='tab']:checked + label {
-      color: $link-color;
-      box-shadow: 3.5px -3px 5px $light-grey;
     }
 
     /**************
@@ -633,6 +578,10 @@ LARGER THAN A TABLET
     ***************/
     .selectize-control {
       width: 86%;
+
+      .selectize-dropdown-content {
+        height: 40px;
+      }
     }
 
     /**************
