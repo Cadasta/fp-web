@@ -225,6 +225,7 @@ L.PageComposer = L.Class.extend({
 
       this.dimensions.width = width * this.refs.cols;
       this.dimensions.height = height * this.refs.rows;
+
       /* ALTERNATE CODE TO KEEP GRID AS BIG AS POSSIBLE AT ALL TIMES. DELETE LINES 223 - 230
       if (this.dimensions.height > size.y - 40) {
         this.dimensions.height = size.y - 40;
@@ -240,10 +241,6 @@ L.PageComposer = L.Class.extend({
       if (this.dimensions.height > size.y - 60 || this.dimensions.height < size.y - 70 ) {
         this.dimensions.height = size.y - 60;
         this.dimensions.width = ((this.dimensions.height / this.refs.rows) * this.refs.page_aspect_ratio) * this.refs.cols;
-      }
-      if (this.dimensions.width > size.x - 60 || this.dimensions.width < size.x - 70 && !this.dimensions.height > size.y - 60 ) {
-        this.dimensions.width = size.x - 60;
-        this.dimensions.height = ((this.dimensions.width / this.refs.cols) / this.refs.page_aspect_ratio) * this.refs.rows;
       }
       if (this.dimensions.width > size.x - 40) {
         this.dimensions.width = size.x - 40;
@@ -331,9 +328,17 @@ L.PageComposer = L.Class.extend({
       this._subCol = gridModifiers[0];
 
       L.DomEvent.addListener(this._addRow, "click", this._onAddRow, this);
+      L.DomEvent.disableClickPropagation(this._addRow);
+
       L.DomEvent.addListener(this._minusRow, "click", this._onSubtractRow, this);
+      L.DomEvent.disableClickPropagation(this._minusRow);
+
       L.DomEvent.addListener(this._addCol, "click", this._onAddCol, this);
+      L.DomEvent.disableClickPropagation(this._addCol);
+
       L.DomEvent.addListener(this._subCol, "click", this._onSubtractCol, this);
+      L.DomEvent.disableClickPropagation(this._subCol);
+
     },
 
     _createElements: function() {
