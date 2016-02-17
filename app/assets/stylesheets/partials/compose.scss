@@ -322,14 +322,6 @@ SIDE MENU
   .selectize-control {
     width: 85%;
 
-    .selectize-input {
-      padding: 1px 5px;
-
-      &::after {
-        right: 5px;
-      }
-    }
-
     .item, .selectize-dropdown-content {
       font-size: 1rem;
     }
@@ -602,6 +594,14 @@ LARGER THAN A TABLET
     ***************/
     .selectize-control {
       width: 86%;
+
+      .item, .selectize-dropdown-content {
+        font-size: 1rem;
+      }
+
+      .selectize-dropdown-content {
+        height: 100px;
+      }
     }
 
     /**************
