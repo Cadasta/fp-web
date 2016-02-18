@@ -257,6 +257,51 @@ L.PageComposer = L.Class.extend({
       this._render();
     },
 
+    _setGridRotation: function(deg){
+
+    },
+
+    _updateGridRotation: function(deg){
+      var width = this.dimensions.width;
+      var height = this.dimensions.height;
+      var size = this.map.getSize();
+      
+      // var sizeX = $('.container').width();
+      // var sizeY = $('.container').height();
+      // var $box = $('.bounding-box');
+      
+      var newHeight =(Math.sin(deg/180*Math.PI) * width)+(Math.cos(deg/180*Math.PI) * height);
+      var newWidth = (Math.sin(deg/180*Math.PI) * height) + (Math.cos(deg/180*Math.PI) * width);
+
+      // var gridMarginTop = (newHeight - height)/2;
+      // var gridMarginLeft = (newWidth - width)/2;
+      // var boxMarginTop = ((sizeY - newHeight) / 2);
+      // var boxMarginLeft = ((sizeX - newWidth) / 2);
+
+      // $box.width(newWidth);
+      // $box.height(newHeight);
+      
+      // $box.css({
+      //   'margin-top': boxMarginTop,
+      //   'margin-left': boxMarginLeft
+      // });
+      
+      
+      document.getElementsByClassName('leaflet-areaselect-grid')[0].style.transform = 'rotate(' + deg + 'deg)';
+      // ({
+      //   // 'margin-top': gridMarginTop,
+      //   // 'margin-left': gridMarginLeft,
+      //   'transform': 'rotate(' + deg + 'deg)',
+      //   '-webkit-transform': 'rotate(' + deg + 'deg)'
+      // });
+    },
+
+    _onRotationChange: function(evt){
+      var deg = document.getElementById('rangeInput').value;
+      console.log(deg);
+      this._updateGridRotation(deg);
+    },
+
     _makePageElement: function(x,y,w,h) {
       var div = document.createElement('div');
       div.className = "page";
@@ -341,6 +386,24 @@ L.PageComposer = L.Class.extend({
 
     },
 
+    _onRotationMouseDown: function() {
+      this._degreeModifier = document.getElementById("degrees");
+      this._rangeInput = document.getElementById('rangeInput');
+      L.DomEvent.removeListener(this._rangeInput, "mousedown", this._onRotationMouseDown, this);
+
+      L.DomEvent.addListener(this._rangeInput, "mousemove", this._onRotationChange, this);
+      L.DomEvent.addListener(this._rangeInput, "mouseup", this._onRotationMouseUp, this);
+      L.DomEvent.disableClickPropagation(this._degreeModifier);
+
+    },
+
+    _onRotationMouseUp: function(event) {
+      L.DomEvent.removeListener(this._rangeInput, "mouseup", this._onRotationMouseUp);
+      L.DomEvent.removeListener(this._rangeInput, "mousemove", this._onRotationChange);
+      L.DomEvent.addListener(this._rangeInput, "mousedown", this._onRotationMouseDown, this);
+      this.fire("change");
+    },
+
     _createElements: function() {
         if (!!this._container)
           return;
@@ -351,6 +414,8 @@ L.PageComposer = L.Class.extend({
 
         // add/remove page btns
         this._createPageModifiers();
+
+        this._onRotationMouseDown();
 
         // add scale btn
         this._createContainerModifiers();
