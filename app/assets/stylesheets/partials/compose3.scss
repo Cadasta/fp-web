@@ -57,7 +57,7 @@ SIDE MENU
   height: 100vh;
 
   margin: 0;
-  padding-right: 0;
+  padding: 0;
 
   border: 2px solid #eee;
   border-top: none;
@@ -148,122 +148,28 @@ SIDE MENU
   }
 
   /****************
-  MENU LABELS AND ARROWS
+  MENU LABELS AND GROUP
   *****************/
+  h5 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
+    margin-top: -5px;
+  }
 
   label {
       color: #444;
       font-weight: 400;
   }
 
-  .accordion-header {
-    $arrow-height: 10px solid $dark-grey;
-    $arrow-width: 5px solid transparent;
-    $arrow-height-after: 15px solid white;
-    $arrow-width-after: 10px solid transparent;
-
-    width: 100%;
-    border-bottom: 2px solid $light-grey;
-    cursor: pointer;
-
-    h5 {
-      display: inline-block;
-      margin: 5px;
-      font-size: 1.3rem;
-    }
-
-    .box {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      float: right;
-
-        .down-arrow, .up-arrow {
-          position: relative;
-          width: 0;
-          height: 0;
-          margin: 0 auto;
-          margin-top: 10px;
-          border-right: $arrow-width;
-          border-left: $arrow-width;
-          transition: all .2s;
-          -webkit-transition: all .2s; /* Safari */
-        }
-
-        .down-arrow::after, .up-arrow::after {
-          position: absolute;
-          left: -10px;
-          border-right: $arrow-width-after;
-          border-left: $arrow-width-after;
-          content: "";
-          z-index: 1;
-        }
-
-        .down-arrow {
-          border-top: $arrow-height;
-        }
-
-        .up-arrow {
-          left: 3px;
-          margin-top: 9px;
-          border-bottom: $arrow-height;
-        }
-
-        .down-arrow::after {
-          top: -18px;
-          border-top: $arrow-height-after;
-        }
-
-        .up-arrow::after {
-          bottom: -18px;
-          left: -10px;
-          border-bottom: $arrow-height-after;
-        }
-      }
-  }
-
-  /**************
-  ACCORDION
-  ***************/
-  .accordion {
-
-    a {
-      text-decoration: none;
-      color: $font-color;
-
-      &:hover {
-        color: $secondary-color;
-      }
-    }
-
-    .accordion-body {
+  .menu-group-container{
+    overflow-y: auto;
+    .menu-group {
       padding: 10px;
-    }
-
-    .accordion-group {
-      height: 31px;
-      overflow: hidden;
-      transition: height .5s ease-out;
-      -webkit-transition: height .5s ease-out; /* Safari */
-
-      h5 {
-        position: relative;
-      }
-    }
-
-    .selected {
-      width: 97%;
-      height: calc(100vh - 93px - 40px - 34px);
-      border-bottom: 2px solid $light-grey;
-      overflow: hidden;
-
-      .accordion-header {
-        border: none;
-      }
+      // padding-bottom: 20px;
+      border-bottom: $light-grey 2px solid;
     }
   }
+  
 
   /****************
   SEARCH
@@ -274,18 +180,31 @@ SIDE MENU
     background: rgba($light-grey, 0.1);
     border: $light-grey solid 1px;
     border-right: none;
+    display: inline;
 
     .map-location-search-box {
-      width: 90%;
+      width: 60%;
+      height: 37px;
       margin: 5%;
+      display: inline-block;
+      float: left;
     }
 
     .map-location-search-button {
-      width: 32%;
-      padding: 0 10px;
-      text-align: center;
+      display: inline-block;
+      border: 1px solid $light-grey;
+      background-color: white;
+      border-radius: 5px;
+      width: 25%;
+      font-size: 1rem;
+      // height: 30px;
+      float: right;
+      margin: 5%;
+      margin-left: 0;
+      padding: 0;
+      // padding-top: -10px;
+      // text-align: center;
     }
-
   }
 
   /**************
@@ -302,6 +221,14 @@ SIDE MENU
     }
   }
 
+  .include-notes {
+    margin-top: -10px;
+    margin-bottom: 10px;
+  }
+
+  .private-map {
+    margin-bottom: -10px;
+  }
 
   /**************
   BASEMAP OPTIONS
@@ -330,6 +257,7 @@ SIDE MENU
   .col-row-modifiers {
     width: 130px;
     align-items: left;
+    margin-bottom: 20px;
 
     .col-row-modifiers-group {
       width: 112px;
@@ -400,8 +328,8 @@ SIDE MENU
   ***************/
 
   #final-step {
-    position: absolute;
     bottom: 20px;
+    margin-top: 10px;
     width: 90%;
     height: 40px;
     margin-bottom: 5px;
@@ -409,7 +337,7 @@ SIDE MENU
     background-color: #444;
     border-color: 1px solid #d1d1d1;
 
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: $light-grey;
 
     &:hover {
@@ -418,7 +346,8 @@ SIDE MENU
   }
 
   .cancel {
-    position: absolute;
+    display: block;
+    float: right;
     bottom: 0;
     width: 100%;
     height: 20px;
@@ -450,16 +379,6 @@ FULL-SCREEN MAP
       width: 125px;
     }
   }
-
-  .option-one {
-    position: fixed;
-    bottom: 20px;
-    right: 35%;
-    font-size: 5rem;
-    font-weight: 200;
-    z-index: 2;
-    pointer-events: none;
-  }
 }
 
 
@@ -473,36 +392,6 @@ LARGER THAN A TABLET
   ***************/
   #big-map-menu {
     width: 225px;
-
-    .accordion-header {
-
-      h5 {
-        font-size: 2rem;
-      }
-
-      .box {
-        margin-top: 5px;
-      }
-    }
-
-    /**************
-    LARGER ACCORDION
-    ***************/
-
-    .accordion {
-
-      .accordion-group {
-        height: 42px;
-
-        .box .up-arrow {
-          left: 6px;
-        }
-      }
-
-      .selected {
-        height: calc(100vh - 126px - 40px - 52px);
-      }
-    }
 
     /***********
     LARGER GENERIC
@@ -519,6 +408,7 @@ LARGER THAN A TABLET
 
     textarea {
       margin-bottom: 10px;
+
     }
 
     input {
@@ -533,8 +423,22 @@ LARGER THAN A TABLET
       height: 30px;
     }
 
+    h5 {
+      font-size: 1.8rem;
+    }
+
     .tooltips-container {
       font-size: 1.2rem;
+    }
+
+    /**************
+    LARGER SEARCH
+    ***************/
+
+    .atlas-search-field {
+      .map-location-search-button {
+        font-size: 1.5rem;
+      }
     }
 
     /**************
@@ -550,8 +454,22 @@ LARGER THAN A TABLET
     /**************
     LARGER ROW AND COL MODIFIERS
     ***************/
-    .col-row-modifiers-group {
+    .col-row-modifiers {
+      width: 90%;
       margin-bottom: 10px;
+      display: flex;
+      flex-flow: row;
+      margin-left: 5px;
+
+      .col-row-modifiers-group {
+        width: 100%;
+
+        .grid-modifier-group {
+          height: 20px;
+          width: 90%;
+          font-size: 13px;
+        }
+      }
     }
 
     /**************
@@ -569,7 +487,7 @@ LARGER THAN A TABLET
 
     #final-step,
     .cancel {
-      font-size: 1.5rem;
+      font-size: 1.7rem;
     }
   }
 
