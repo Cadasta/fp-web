@@ -11,7 +11,7 @@
 
       <!-- BEGINNING OF ACCORDION -->
       <div class='accordion'>
-        <div class="accordion-group selected">
+        <div class="accordion-group selected-group">
         <div class="atlas-location-and-name">
         <div class="accordion-header">
           <h5>Atlas Information</h5>
@@ -38,12 +38,12 @@
 
             <div class="include-notes">
               <%= f.check_box :layout %>
-              <%= f.label :layout, _("Add Notes") %>
+              <%= f.label :layout, _("Print Notes") %>
               <div class='tooltips-container'><div data-tooltip="If you choose to include notes, your map will be printed on the top half a page with notes displayed on the bottom half. Otherwise, maps will be displayed on a full page." class="tooltips">(?)</div></div>
             </div>
             <div class="private-map">
               <%= f.check_box :private %>
-              <%= f.label :private, _("Private") %>
+              <%= f.label :private, _("Keep atlas private") %>
               <div class='tooltips-container'><div data-tooltip="Private atlases can only be accessed if you're logged in, or via a URL provided to you in the final step." class="tooltips">(?)</div></div>
             </div>
 
@@ -70,27 +70,7 @@
           <%= f.label :provider, _("Basemap") %>
           <%= f.select :provider, options_for_select(Providers.options, [Providers.default]) %>
 
-      <div class='col-row-modifiers'>
-
-        <div class="col-row-modifiers-group">
-          <%= f.label :col, _("Column") %>
-          <div class="grid-modifier-group">
-            <div class="grid-modifier minus">-</div>
-            <div class="grid-modifier number">2</div>
-            <div class="grid-modifier plus">+</div>
-          </div> <!-- grid-modifier-group -->
-        </div> <!-- col-row-modifier-group -->
-
-        <div class="col-row-modifiers-group">
-          <%= f.label :row, _("Row") %>
-          <div class="grid-modifier-group">
-        	  <div class="grid-modifier minus">-</div>
-            <div class="grid-modifier number">1</div>
-            <div class="grid-modifier plus">+</div>
-          </div> <!-- grid-modifier-group -->
-        </div> <!-- col-row-modifier-group -->
-
-      </div> <!-- col-row-modifiers -->
+      
       </div>
       </div>
 
@@ -102,10 +82,6 @@
       <div class="add-ons">
         <%= f.check_box :utm_grid%>
         <%= f.label :utm_grid, _("UTM Grid")  %><div class='tooltips-container'><div data-tooltip="Click for more information." class="tooltips">(<a href="https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system" target="_blank">?</a>)</div></div> <br />
-        <%= f.check_box :redcross_overlay %>
-        <%= f.label :redcross_overlay, _("GADM Overlay") %>
-        <div class='tooltips-container'><div data-tooltip='For disaster relief efforts in the Philippines
-        -- only available in the Philippines and will cause atlases to fail if used elsewhere' class="tooltips">(?)</div></div>
 
       </div>
       </div>
@@ -122,10 +98,29 @@
     <div class="field-papers-logo">
       <%= image_tag "logo-header.png" %>
     </div>
-    <div class="option-one">
-      Option #2
-    </div>
-  </div>
+
+  <div class='col-row-modifiers'>
+
+    <div class="col-row-modifiers-group">
+      
+      <div class="grid-modifier-group">
+        <div class="grid-modifier minus">-</div>
+        <div class="grid-modifier number">2</div>
+        <div class="grid-modifier plus">+</div>
+      </div> <!-- grid-modifier-group -->
+    </div> <!-- col-row-modifier-group -->
+
+    <div class="col-row-modifiers-group">
+      
+      <div class="grid-modifier-group">
+        <div class="grid-modifier minus">-</div>
+        <div class="grid-modifier number">1</div>
+        <div class="grid-modifier plus">+</div>
+      </div> <!-- grid-modifier-group -->
+    </div> <!-- col-row-modifier-group -->
+
+  </div> <!-- col-row-modifiers -->
+</div><!-- map -->
 
 <% content_for :foot do %>
 

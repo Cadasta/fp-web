@@ -53,7 +53,7 @@ SIDE MENU
   top: 0;
   left: 0;
   z-index: 9999;
-  width: 130px;
+  width: 160px;
   height: 100vh;
 
   margin: 0;
@@ -80,7 +80,6 @@ SIDE MENU
   textarea {
     width: 90%;
     max-width: 90%;
-    height: 30px;
     margin: 0;
   }
 
@@ -163,13 +162,14 @@ SIDE MENU
     $arrow-width-after: 10px solid transparent;
 
     width: 100%;
+    padding: 0 5px;
     border-bottom: 2px solid $light-grey;
     cursor: pointer;
 
     h5 {
       display: inline-block;
       margin: 5px;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
     }
 
     .box {
@@ -206,7 +206,6 @@ SIDE MENU
         }
 
         .up-arrow {
-          left: 3px;
           margin-top: 9px;
           border-bottom: $arrow-height;
         }
@@ -240,10 +239,11 @@ SIDE MENU
 
     .accordion-body {
       padding: 10px;
+      padding-top: 0;
     }
 
     .accordion-group {
-      height: 31px;
+      height: 34px;
       overflow: hidden;
       transition: height .5s ease-out;
       -webkit-transition: height .5s ease-out; /* Safari */
@@ -253,9 +253,10 @@ SIDE MENU
       }
     }
 
-    .selected {
-      width: 97%;
-      height: calc(100vh - 93px - 40px - 34px);
+    .selected-group {
+      width: 100%;
+      // height: calc(100vh - 93px - 40px - 34px);
+      height: 242px;
       border-bottom: 2px solid $light-grey;
       overflow: hidden;
 
@@ -276,8 +277,14 @@ SIDE MENU
     border-right: none;
 
     .map-location-search-box {
+      background-image: image-url('search-24x24.png');
+      background-size: 15px;
+      background-repeat: no-repeat;
+      background-position: 2px 2px;
+      padding-left:22px;
       width: 90%;
       margin: 5%;
+      font-size: 1.2rem;
     }
 
     .map-location-search-button {
@@ -302,11 +309,27 @@ SIDE MENU
     }
   }
 
+  .include-notes {
+    margin-top: -5px;
+    margin-bottom: 15px;
+  }
+
 
   /**************
   BASEMAP OPTIONS
   ***************/
 
+  .selectize-control {
+    width: 85%;
+
+    .item, .selectize-dropdown-content {
+      font-size: 1rem;
+    }
+
+    .selectize-dropdown-content {
+      height: 60px;
+    }
+  }
 
   /**************
   PAGE ORIENTATION AND PAPER SIZE
@@ -319,7 +342,7 @@ SIDE MENU
     width: 100%;
 
    .page-layout-group {
-      width: 50px;
+      width: 86%;
     }
   }
 
@@ -327,60 +350,7 @@ SIDE MENU
   ROW AND COL MODIFIERS
   ***************/
 
-  .col-row-modifiers {
-    width: 130px;
-    align-items: left;
-
-    .col-row-modifiers-group {
-      width: 112px;
-      align-items: left;
-
-      .grid-modifier-group {
-        height: 20px;
-        width: 80px;
-        font-size: 13px;
-        display: inline-block;
-
-        cursor: pointer;
-        -webkit-user-select: none;  /* Chrome all / Safari all */
-        -moz-user-select: none;     /* Firefox all */
-        -ms-user-select: none;
-        user-select: none;
-
-        div {
-          display: inline-block;
-          width: calc(70px/3);
-          height: 25px;
-          margin: 0;
-          margin-left: -4px;
-          padding-top: 2.5px;
-
-          background-color: #fff;
-          border: 1px solid #d1d1d1;
-          box-shadow: none;
-          text-align: center;
-        }
-
-        .minus {
-          background-color: #eee;
-          border-top-left-radius: 4px;
-          border-bottom-left-radius: 4px;
-          border-right: none;
-        }
-
-        .plus {
-          background-color: #eee;
-          border-top-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-          border-left: none;
-        }
-
-        .number {
-          text-align: center;
-        }
-      }
-    }
-  }
+  
 
   /**************
   ADD-ONS
@@ -401,15 +371,15 @@ SIDE MENU
 
   #final-step {
     position: absolute;
-    bottom: 20px;
+    top: calc(242px + 34px + 34px + 50px);
     width: 90%;
     height: 40px;
-    margin-bottom: 5px;
+    margin-left: 10px;
     padding: 0;
     background-color: #444;
     border-color: 1px solid #d1d1d1;
 
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: $light-grey;
 
     &:hover {
@@ -419,7 +389,7 @@ SIDE MENU
 
   .cancel {
     position: absolute;
-    bottom: 0;
+    top: calc(242px + 34px + 34px + 50px + 50px);
     width: 100%;
     height: 20px;
     padding-right: 10%;
@@ -433,10 +403,10 @@ FULL-SCREEN MAP
 ***************/
 
 #map {
-  width: calc(100vw - 130px);
+  width: calc(100vw - 160px);
   height: 100vh;
   margin: 0;
-  margin-left: 130px;
+  margin-left: 160px;
   padding: 0;
 
  .field-papers-logo {
@@ -451,14 +421,76 @@ FULL-SCREEN MAP
     }
   }
 
-  .option-one {
+  .col-row-modifiers {
+    width: 240px;
+    align-items: left;
+    margin-left: 5px;
+    z-index: 999;
     position: fixed;
-    bottom: 20px;
-    right: 35%;
-    font-size: 5rem;
-    font-weight: 200;
-    z-index: 2;
-    pointer-events: none;
+    bottom: 15px;
+    left: 320px;
+    display: inline-block;
+
+    .col-row-modifiers-group {
+      width: 110px;
+      display: inline-block;
+
+      .grid-modifier-group {
+        height: 30px;
+        width: 110px;
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-block;
+
+        cursor: pointer;
+        -webkit-user-select: none;  /* Chrome all / Safari all */
+        -moz-user-select: none;     /* Firefox all */
+        -ms-user-select: none;
+        user-select: none;
+
+        div {
+          display: inline-block;
+          width: calc(85px/3);
+          height: 30px;
+          margin: 0;
+          margin-left: -5px;
+          padding-top: 2.5px;
+
+          background-color: #fff;
+          border: 1px solid rgba($dark-grey, 0.7);
+          box-shadow: none;
+          text-align: center;
+        }
+
+        .minus {
+          background-color: #eee;
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+          border-right: none;
+
+          &:active {
+            background-color: $light-grey;
+          }
+        }
+
+        .plus {
+          background-color: #eee;
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+          border-left: none;
+
+          &:active {
+            background-color: $light-grey;
+          }
+        }
+
+        .number {
+          text-align: center;
+          border-right: 1px solid rgba($dark-grey, 0.5);
+          border-left: 1px solid rgba($dark-grey, 0.5);
+        }
+      }
+    }
   }
 }
 
@@ -493,14 +525,11 @@ LARGER THAN A TABLET
 
       .accordion-group {
         height: 42px;
-
-        .box .up-arrow {
-          left: 6px;
-        }
       }
 
-      .selected {
-        height: calc(100vh - 126px - 40px - 52px);
+      .selected-group {
+        // height: calc(100vh - 126px - 40px - 52px);
+        height: 300px;
       }
     }
 
@@ -538,12 +567,40 @@ LARGER THAN A TABLET
     }
 
     /**************
+    LARGER SEARCH
+    ***************/
+
+    .atlas-search-field {
+      .map-location-search-box {
+        background-size: 20px;
+        background-position: 4px 4px;
+        padding-left:30px;
+        font-size: 1.5rem;
+      }
+    }
+
+    /**************
     LARGER PAGE ORIENTATION AND PAPER SIZE
     ***************/
 
     .page-sizing-and-orientation {
      .page-layout-group {
         width: 92px;
+      }
+    }
+
+    /**************
+    LARGER BASEMAP
+    ***************/
+    .selectize-control {
+      width: 86%;
+
+      .item, .selectize-dropdown-content {
+        font-size: 1rem;
+      }
+
+      .selectize-dropdown-content {
+        height: 100px;
       }
     }
 
@@ -558,18 +615,15 @@ LARGER THAN A TABLET
     LARGER PRINT ATLAS BUTTON
     ***************/
     #final-step {
-      bottom: 25px;
-      width: 80%;
-      margin-left: 10%;
+      top: calc(300px + 42px + 42px + 70px);
+      height: 50px;
+
+      font-size: 2rem;
     }
 
     .cancel {
-      height: 30px;
-    }
+      top: calc(300px + 42px + 42px + 50px + 80px);
 
-    #final-step,
-    .cancel {
-      font-size: 1.5rem;
     }
   }
 
