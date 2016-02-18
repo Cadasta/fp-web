@@ -18,6 +18,14 @@ MIX-INS
   display: -webkit-flex;
 }
 
+@mixin vendor($name, $argument) {
+  #{$name}: $argument;
+  -webkit-#{$name}: $argument;
+  -ms-#{$name}: $argument;
+  -moz-#{$name}: $argument;
+  -o-#{$name}: $argument;
+}
+
 /**********
 GENERAL FOR COMPOSE
 ***********/
@@ -53,7 +61,7 @@ SIDE MENU
   top: 0;
   left: 0;
   z-index: 9999;
-  width: 130px;
+  width: 160px;
   height: 100vh;
 
   margin: 0;
@@ -62,13 +70,16 @@ SIDE MENU
   border: 2px solid #eee;
   border-top: none;
 
+  list-display: none;
+
   form {
     margin-bottom: 0;
   }
 
   label {
-    font-size: 1rem;
-    margin-bottom: 2px;
+    font-size: 1.2rem;
+    margin-bottom: 1px;
+    margin-top: 10px;
   }
 
   input[type=text] {
@@ -80,7 +91,6 @@ SIDE MENU
   textarea {
     width: 90%;
     max-width: 90%;
-    height: 30px;
     margin: 0;
   }
 
@@ -148,121 +158,76 @@ SIDE MENU
   }
 
   /****************
-  MENU LABELS AND ARROWS
+  MENU TABS
   *****************/
 
-  label {
-      color: #444;
-      font-weight: 400;
-  }
-
-  .accordion-header {
-    $arrow-height: 10px solid $dark-grey;
-    $arrow-width: 5px solid transparent;
-    $arrow-height-after: 15px solid white;
-    $arrow-width-after: 10px solid transparent;
-
-    width: 100%;
-    border-bottom: 2px solid $light-grey;
+  .menu-tabs-label {
+    background-color: white;
+    box-shadow: inset 3px 4px 5px $light-grey;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-family: sans-serif;
+    font-weight: 300;
+    text-align: center;
     cursor: pointer;
-
-    h5 {
-      display: inline-block;
-      margin: 5px;
-      font-size: 1.3rem;
+  
+    &:hover {
+      color: $link-color;
     }
-
-    .box {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      float: right;
-
-        .down-arrow, .up-arrow {
-          position: relative;
-          width: 0;
-          height: 0;
-          margin: 0 auto;
-          margin-top: 10px;
-          border-right: $arrow-width;
-          border-left: $arrow-width;
-          transition: all .2s;
-          -webkit-transition: all .2s; /* Safari */
-        }
-
-        .down-arrow::after, .up-arrow::after {
-          position: absolute;
-          left: -10px;
-          border-right: $arrow-width-after;
-          border-left: $arrow-width-after;
-          content: "";
-          z-index: 1;
-        }
-
-        .down-arrow {
-          border-top: $arrow-height;
-        }
-
-        .up-arrow {
-          left: 3px;
-          margin-top: 9px;
-          border-bottom: $arrow-height;
-        }
-
-        .down-arrow::after {
-          top: -18px;
-          border-top: $arrow-height-after;
-        }
-
-        .up-arrow::after {
-          bottom: -18px;
-          left: -10px;
-          border-bottom: $arrow-height-after;
-        }
-      }
   }
 
-  /**************
-  ACCORDION
-  ***************/
-  .accordion {
+  .menu-tabs {
+    position: relative;
+    margin-top: 50px;
+    .menu-tabs-input {
+      display: none;
+    }
 
-    a {
-      text-decoration: none;
-      color: $font-color;
-
-      &:hover {
-        color: $secondary-color;
+    .menu-tabs-label {
+      width: 30px;
+      height: 100px;
+      margin-left: 156px;
+      z-index: 7;
+      margin-top: -5px;
+      display: inline-block;
+      // padding: 20px 0;
+      -webkit-trasition: color 0.3s linear;
+      transition: color 0.3s linear;
+      
+      div {
+        position: absolute;
+        transform: rotate(90deg);
+        width: 100px;
+        height: 50px;
+        // top: 20px;
+        margin-top: 25px;
+        left: 105px;
       }
     }
+  }
 
-    .accordion-body {
-      padding: 10px;
-    }
+  [id^='tab']:checked + label {
+    color: $link-color;
+    box-shadow: 2px -3px 5px $light-grey;
+  }
 
-    .accordion-group {
-      height: 31px;
-      overflow: hidden;
-      transition: height .5s ease-out;
-      -webkit-transition: height .5s ease-out; /* Safari */
-
-      h5 {
-        position: relative;
-      }
-    }
-
-    .selected {
-      width: 97%;
-      height: calc(100vh - 93px - 40px - 34px);
-      border-bottom: 2px solid $light-grey;
-      overflow: hidden;
-
-      .accordion-header {
-        border: none;
-      }
-    }
+  .tab-content {
+    position: absolute;
+    width: 150px;
+    left: -225px;
+    margin-top: -50px;
+    top: 10px;
+    opacity: 0;
+    @include vendor(transition, all 0.3s ease-in-out);
+  }
+  
+  #tab1:checked ~ #tab-content1,
+  #tab2:checked ~ #tab-content2,
+  #tab3:checked ~ #tab-content3 {
+    left: 10px;
+    opacity: 1;
   }
 
   /****************
@@ -276,8 +241,14 @@ SIDE MENU
     border-right: none;
 
     .map-location-search-box {
+      background-image: image-url('search-24x24.png');
+      background-size: 15px;
+      background-repeat: no-repeat;
+      background-position: 2px 2px;
+      padding-left:22px;
       width: 90%;
       margin: 5%;
+      font-size: 1.2rem;
     }
 
     .map-location-search-button {
@@ -302,11 +273,39 @@ SIDE MENU
     }
   }
 
+  .include-notes {
+    margin-top: -5px;
+    margin-bottom: 15px;
+  }
+
+  .private-map {
+    font-size: 1rem;
+  }
+
 
   /**************
   BASEMAP OPTIONS
   ***************/
 
+  .selectize-control {
+    width: 85%;
+
+    .selectize-input {
+      padding: 1px 5px;
+
+      &::after {
+        right: 5px;
+      }
+    }
+
+    .item, .selectize-dropdown-content {
+      font-size: 1rem;
+    }
+
+    .selectize-dropdown-content {
+      height: 60px;
+    }
+  }
 
   /**************
   PAGE ORIENTATION AND PAPER SIZE
@@ -319,66 +318,7 @@ SIDE MENU
     width: 100%;
 
    .page-layout-group {
-      width: 50px;
-    }
-  }
-
-  /**************
-  ROW AND COL MODIFIERS
-  ***************/
-
-  .col-row-modifiers {
-    width: 130px;
-    align-items: left;
-
-    .col-row-modifiers-group {
-      width: 112px;
-      align-items: left;
-
-      .grid-modifier-group {
-        height: 20px;
-        width: 80px;
-        font-size: 13px;
-        display: inline-block;
-
-        cursor: pointer;
-        -webkit-user-select: none;  /* Chrome all / Safari all */
-        -moz-user-select: none;     /* Firefox all */
-        -ms-user-select: none;
-        user-select: none;
-
-        div {
-          display: inline-block;
-          width: calc(70px/3);
-          height: 25px;
-          margin: 0;
-          margin-left: -4px;
-          padding-top: 2.5px;
-
-          background-color: #fff;
-          border: 1px solid #d1d1d1;
-          box-shadow: none;
-          text-align: center;
-        }
-
-        .minus {
-          background-color: #eee;
-          border-top-left-radius: 4px;
-          border-bottom-left-radius: 4px;
-          border-right: none;
-        }
-
-        .plus {
-          background-color: #eee;
-          border-top-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-          border-left: none;
-        }
-
-        .number {
-          text-align: center;
-        }
-      }
+      width: 86%;
     }
   }
 
@@ -401,15 +341,15 @@ SIDE MENU
 
   #final-step {
     position: absolute;
-    bottom: 20px;
+    top: calc(242px + 34px + 34px);
     width: 90%;
     height: 40px;
-    margin-bottom: 5px;
+    margin-left: 10px;
     padding: 0;
     background-color: #444;
     border-color: 1px solid #d1d1d1;
 
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: $light-grey;
 
     &:hover {
@@ -419,7 +359,7 @@ SIDE MENU
 
   .cancel {
     position: absolute;
-    bottom: 0;
+    top: calc(242px + 34px + 34px + 50px);
     width: 100%;
     height: 20px;
     padding-right: 10%;
@@ -433,10 +373,11 @@ FULL-SCREEN MAP
 ***************/
 
 #map {
-  width: calc(100vw - 130px);
+  width: calc(100vw - 160px);
+  position: fixed;
   height: 100vh;
   margin: 0;
-  margin-left: 130px;
+  margin-left: 160px;
   padding: 0;
 
  .field-papers-logo {
@@ -451,14 +392,80 @@ FULL-SCREEN MAP
     }
   }
 
-  .option-one {
+  /**************
+  ROW AND COL MODIFIERS
+  ***************/
+
+  .col-row-modifiers {
+    width: 240px;
+    align-items: left;
+    margin-left: 5px;
+    z-index: 999;
     position: fixed;
-    bottom: 20px;
-    right: 35%;
-    font-size: 5rem;
-    font-weight: 200;
-    z-index: 2;
-    pointer-events: none;
+    bottom: 15px;
+    left: 320px;
+    display: inline-block;
+
+    .col-row-modifiers-group {
+      width: 110px;
+      display: inline-block;
+
+      .grid-modifier-group {
+        height: 30px;
+        width: 110px;
+        font-size: 16px;
+        font-weight: 600;
+        display: inline-block;
+
+        cursor: pointer;
+        -webkit-user-select: none;  /* Chrome all / Safari all */
+        -moz-user-select: none;     /* Firefox all */
+        -ms-user-select: none;
+        user-select: none;
+
+        div {
+          display: inline-block;
+          width: calc(85px/3);
+          height: 30px;
+          margin: 0;
+          margin-left: -5px;
+          padding-top: 2.5px;
+
+          background-color: #fff;
+          border: 1px solid rgba($dark-grey, 0.7);
+          box-shadow: none;
+          text-align: center;
+        }
+
+        .minus {
+          background-color: #eee;
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+          border-right: none;
+
+          &:active {
+            background-color: $light-grey;
+          }
+        }
+
+        .plus {
+          background-color: #eee;
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+          border-left: 1px solid rgba($dark-grey, 0.5);
+
+          &:active {
+            background-color: $light-grey;
+          }
+        }
+
+        .number {
+          text-align: center;
+          border-left: 1px solid rgba($dark-grey, 0.5);
+          border-right: none;
+        }
+      }
+    }
   }
 }
 
@@ -473,6 +480,7 @@ LARGER THAN A TABLET
   ***************/
   #big-map-menu {
     width: 225px;
+    background-color: white;
 
     .accordion-header {
 
@@ -493,14 +501,11 @@ LARGER THAN A TABLET
 
       .accordion-group {
         height: 42px;
-
-        .box .up-arrow {
-          left: 6px;
-        }
       }
 
-      .selected {
-        height: calc(100vh - 126px - 40px - 52px);
+      .selected-group {
+        // height: calc(100vh - 126px - 40px - 52px);
+        height: 300px;
       }
     }
 
@@ -538,6 +543,53 @@ LARGER THAN A TABLET
     }
 
     /**************
+    LARGER SEARCH
+    ***************/
+
+    .atlas-search-field {
+      .map-location-search-box {
+        background-size: 20px;
+        background-position: 4px 4px;
+        padding-left:30px;
+        font-size: 1.5rem;
+      }
+    }
+
+    /****************
+    LARGER MENU TABS
+    *****************/
+
+    .menu-tabs-label {
+      font-size: 1.4rem;
+    }
+
+    .menu-tabs {
+      margin-top: 30px;
+      .menu-tabs-label {
+        width: 30px;
+        height: 110px;
+        margin-left: 222px;
+        
+        div {
+          width: 140px;
+          margin-left: 50px;
+        }
+      }
+    }
+
+    .tab-content {
+      width: 200px;
+      top: 30px;
+    }
+    
+    #tab1:checked ~ #tab-content1,
+    #tab2:checked ~ #tab-content2,
+    #tab3:checked ~ #tab-content3 {
+      left: 20px;
+      opacity: 1;
+    }
+
+    /**************
     LARGER PAGE ORIENTATION AND PAPER SIZE
     ***************/
 
@@ -545,6 +597,13 @@ LARGER THAN A TABLET
      .page-layout-group {
         width: 92px;
       }
+    }
+
+    /**************
+    LARGER BASEMAP
+    ***************/
+    .selectize-control {
+      width: 86%;
     }
 
     /**************
@@ -558,24 +617,23 @@ LARGER THAN A TABLET
     LARGER PRINT ATLAS BUTTON
     ***************/
     #final-step {
-      bottom: 25px;
-      width: 80%;
-      margin-left: 10%;
+      top: calc(300px + 42px + 12px);
+      height: 50px;
+
+      font-size: 2rem;
     }
 
     .cancel {
-      height: 30px;
-    }
+      top: calc(300px + 42px + 42px + 20px);
 
-    #final-step,
-    .cancel {
-      font-size: 1.5rem;
     }
   }
 
   #map {
-    margin-left: 225px;
+    margin-left: 223px;
     width: calc(100vw - 225px);
+    top: 0;
+    left: 0;
 
     .field-papers-logo, .field-papers-logo img {
       width: 175px;
