@@ -201,7 +201,6 @@ SIDE MENU
         transform: rotate(90deg);
         width: 100px;
         height: 50px;
-        // top: 20px;
         margin-top: 25px;
         left: 105px;
       }
@@ -493,22 +492,6 @@ LARGER THAN A TABLET
       }
     }
 
-    /**************
-    LARGER ACCORDION
-    ***************/
-
-    .accordion {
-
-      .accordion-group {
-        height: 42px;
-      }
-
-      .selected-group {
-        // height: calc(100vh - 126px - 40px - 52px);
-        height: 300px;
-      }
-    }
-
     /***********
     LARGER GENERIC
     ************/
@@ -569,10 +552,12 @@ LARGER THAN A TABLET
         width: 30px;
         height: 110px;
         margin-left: 222px;
+        margin-bottom: 0;
         
         div {
           width: 140px;
           margin-left: 50px;
+          margin-top: 30px;
         }
       }
     }
