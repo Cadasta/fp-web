@@ -341,10 +341,10 @@ SIDE MENU
 
   #final-step {
     position: absolute;
-    top: calc(242px + 34px + 34px);
+    bottom: 20px;
     width: 90%;
     height: 40px;
-    margin-left: 10px;
+    margin-left: 5%;
     padding: 0;
     background-color: #444;
     border-color: 1px solid #d1d1d1;
@@ -359,7 +359,7 @@ SIDE MENU
 
   .cancel {
     position: absolute;
-    top: calc(242px + 34px + 34px + 50px);
+    bottom: 5px;
     width: 100%;
     height: 20px;
     padding-right: 10%;
@@ -617,14 +617,14 @@ LARGER THAN A TABLET
     LARGER PRINT ATLAS BUTTON
     ***************/
     #final-step {
-      top: calc(300px + 42px + 12px);
+      // top: calc(300px + 42px + 12px);
       height: 50px;
 
       font-size: 2rem;
     }
 
     .cancel {
-      top: calc(300px + 42px + 42px + 20px);
+      // top: calc(300px + 42px + 42px + 20px);
 
     }
   }
