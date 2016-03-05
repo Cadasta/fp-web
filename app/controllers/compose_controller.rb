@@ -19,7 +19,10 @@ class ComposeController < ApplicationController
     # Convert params into a form that ActiveRecord likes (retaining old input
     # names)
     if params[:atlas_location]
+<<<<<<< HEAD
       puts params
+=======
+>>>>>>> master
       new_params = {}
       new_params[:lat], new_params[:lon], new_params[:zoom] =
         params[:atlas_location].split(/,\s*| /).map(&:strip)
@@ -38,6 +41,7 @@ class ComposeController < ApplicationController
   end
 
   def create
+<<<<<<< HEAD
     # TODO: figure out how to calculate rows & columns
     # TODO: how to handle providers & zooms for pages ("features")
     if params[:geojson_data]
@@ -59,12 +63,52 @@ class ComposeController < ApplicationController
     if @atlas.valid?
       @atlas.render!
 
+=======
+    # geojson file
+    if params[:geojson_file]
+      params[:geojson_data] = params[:geojson_file].read
+      return redirect_to compose_path(process_geojson)
+    end
+
+    # TODO: figure out how to calculate rows & columns
+    # TODO: how to handle providers & zooms for pages ("features")
+    if params[:geojson_data]
+      return redirect_to compose_path(process_geojson)
+    end
+
+    # Nasty: force numeric conversion of numeric strings in parameters
+    # from client...
+    @atlas = Atlas.new (Atlas.new atlas_params).attributes
+    @atlas.layout = @atlas.layout == 1 ? "half-page" : "full-page"
+
+    if @atlas.valid?
+      @atlas.save!
+      @atlas.render!
+>>>>>>> master
       return redirect_to atlas_path(@atlas)
     end
 
     redirect_to compose_path
   end
 
+<<<<<<< HEAD
+=======
+  def update
+    # Nasty: force numeric conversion of numeric strings in parameters
+    # from client...
+    @atlas = Atlas.new (Atlas.new atlas_params).attributes
+    @atlas.layout = @atlas.layout == 1 ? "half-page" : "full-page"
+
+    if @atlas.valid?
+      @atlas.save!
+      @atlas.render!
+      return redirect_to atlas_path(@atlas)
+    end
+
+    redirect_to compose_path
+  end
+
+>>>>>>> master
   private
 
   def process_geojson
@@ -74,11 +118,19 @@ class ComposeController < ApplicationController
 
     # TODO: need to validate geojson
 
+<<<<<<< HEAD
     props = geojson['properties']
 
 
     # TODO: need to validate geojson props
     params[:atlas] = {
+=======
+    props = geojson['properties'] || {}
+
+
+    # TODO: need to validate geojson props
+    new_params = {
+>>>>>>> master
       title: props['title'] || '',
       text: props['description'] || '',
       paper_size: props['paper_size'] || 'letter',
@@ -87,7 +139,11 @@ class ComposeController < ApplicationController
       utm_grid: props['utm_grid'] || false,
       redcross_overlay: props['redcross_overlay'] || false,
       zoom: props['zoom'] || 16,
+<<<<<<< HEAD
       provider: Providers.layers[Providers.default.to_sym][:template],
+=======
+      provider: Providers.layers[Providers.default][:template],
+>>>>>>> master
       west: nil,
       south: nil,
       east: nil,
@@ -97,12 +153,21 @@ class ComposeController < ApplicationController
     }
 
     templates = []
+<<<<<<< HEAD
 
     for feature in geojson['features']
       b = nil
       p = feature['properties']
 
       templates.push(p['provider'] || Providers.layers[Providers.default.to_sym][:template])
+=======
+
+    for feature in geojson['features']
+      b = nil
+      p = feature['properties']
+
+      templates.push(p['provider'] || Providers.layers[Providers.default][:template])
+>>>>>>> master
       zoom = p['zoom'] || 16
 
       if feature['geometry']['type'] == 'Point'
@@ -114,6 +179,7 @@ class ComposeController < ApplicationController
       end
 
       if !b.nil?
+<<<<<<< HEAD
         if params[:atlas][:west].nil?
           params[:atlas][:west] = b[0]
         else
@@ -139,13 +205,47 @@ class ComposeController < ApplicationController
         end
       end
     end
+=======
+        if new_params[:west].nil?
+          new_params[:west] = b[0]
+        else
+          new_params[:west] = [new_params[:west], b[0]].min
+        end
+
+        if new_params[:east].nil?
+          new_params[:east] = b[2]
+        else
+          new_params[:east] = [new_params[:east], b[2]].max
+        end
+
+        if new_params[:north].nil?
+          new_params[:north] = b[3]
+        else
+          new_params[:north] = [new_params[:north], b[3]].max
+        end
+
+        if new_params[:south].nil?
+          new_params[:south] = b[1]
+        else
+          new_params[:south] = [new_params[:south], b[1]].min
+        end
+      end
+    end
+    if not new_params[:south].nil? and not new_params[:north].nil?
+      new_params[:lat] = (new_params[:south] + new_params[:north]) / 2
+    end
+    if not new_params[:west].nil? and not new_params[:east].nil?
+      new_params[:lon] = (new_params[:west] + new_params[:east]) / 2
+    end
+    return new_params
+>>>>>>> master
   end
 
   def atlas_params
     params.require(:atlas).permit \
       :north, :south, :east, :west, :zoom, :rows, :cols, :orientation, :provider, # from select
       :title, :text, :private, # from describe
-      :layout, :utm_grid, :redcross_overlay, :paper_size, # from layout
+      :layout, :utm_grid, :paper_size, # from layout
       :refreshed_from, :cloned_from
   end
 

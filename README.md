@@ -11,6 +11,18 @@ overview](https://github.com/fieldpapers/fieldpapers).
 
 [![Build Status](https://travis-ci.org/fieldpapers/fp-web.svg?branch=master)](https://travis-ci.org/fieldpapers/fp-web)
 
+### Setting environment variables
+
+The following is required to run Field Papers, whether locally or via Docker / `docker-compose`:
+
+```bash
+cp sample.env .env
+# provide some AWS credentials, etc.
+open -t .env
+```
+
+In the opened text editor, add variables per [Environment Variables](https://github.com/fieldpapers/fp-web#environment-variables). Contact another Field Papers contributor for any required values not present in `sample.env`.
+
 ### Using docker-compose
 
 [compose](https://docs.docker.com/compose/) is
@@ -27,14 +39,6 @@ local `Dockerfile`s or from remote repositories.
 * mDNS, built-in on OS X, via `libnss-mdns` on Linux or [Bonjour Print Services
   fpr Windows](https://support.apple.com/kb/DL999?locale=en_US)
 * [Docker compose](https://docs.docker.com/compose/)
-
-#### Configuration
-
-```bash
-cp sample.env .env
-# provide some AWS credentials, etc.
-open -t .env
-```
 
 #### Starting
 
@@ -85,6 +89,8 @@ docker run \
 Given the potential complexity of the above, or the need to make changes to the
 peripheral services, it may make more sense to run the application locally (you
 can still use `docker-compose` to run supplementary services like MySQL, etc.).
+If not using `docker-compose`, be sure MySQL is installed (`$``brew install mysql`
+if not) and running (`$``mysql.server start` if not).
 
 On OS X, you'll want use `rbenv` (and `ruby-build`) in order to isolate the
 version of Ruby used here (and to prevent it from conflicting with other
@@ -154,19 +160,18 @@ eval "$(direnv hook bash)" # initialize direnv
 rbenv install $(< .ruby-version) # install the desired ruby version
 
 gem install bundler        # install bundler using rbenv-installed ruby
-gem install foreman
 
 bundle install -j4 --path vendor/bundle # install dependencies
 
 cp sample.env .env
 sensible-editor .env
 
-foreman run echo $DATABASE_URL # ensure that your environment is prepared
+bundle exec foreman run echo $DATABASE_URL # ensure that your environment is prepared
 
 rake db:create             # create a database if one doesn't already exist
 rake db:schema:load        # initialize your database
 
-foreman run rails server -b 0.0.0.0 # start the app, listening on all interfaces
+bundle exec foreman run rails server -b 0.0.0.0 # start the app, listening on all interfaces
 ```
 
 The app will now be running on [localhost:3000](http://localhost:3000/) and
@@ -244,7 +249,7 @@ they are available to the environment in which Rails is running.
 * `DEFAULT_CENTER` - Default center for atlas composition (when a geocoder is
   unavailable). Expected to be in the form `<zoom>/<latitude>/<longitude>`.
   Optional.
-  
+
 ### Running Tests
 
 ```bash
@@ -259,6 +264,24 @@ guard
 ```
 
 ### Translation and Localization
+
+To mark a string as one that should be localized, wrap it in `_()`.
+
+E.g. in an ERB template,
+
+`<% content_for :title, "Atlas - Field Papers" %>`
+
+becomes
+
+`<% content_for :title, _("Atlas - Field Papers") %>`.
+
+E.g. in Javascript within an ERB template,
+
+`window.alert("Hello Field Papers!")`
+
+becomes
+
+`window.alert(_('<%=escape_javascript _("Hello Field Papers!") %>'))`.
 
 Install the [Transifex](https://www.transifex.com/) client (`tx`):
 

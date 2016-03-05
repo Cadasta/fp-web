@@ -149,6 +149,12 @@ class Snapshot < ActiveRecord::Base
       where(user_id: user)
     }
 
+  scope :username,
+    -> username {
+      joins(:uploader)
+      .where(users: {username: username})
+    }
+    
   # workflow states
 
   workflow do
@@ -281,7 +287,7 @@ class Snapshot < ActiveRecord::Base
       atlas.get_provider_without_overlay
     else
       # TODO this is a really nasty way to achieve this
-      Providers.layers[Providers.default.to_sym][:template]
+      Providers.layers[Providers.default]["template"]
     end
   end
 

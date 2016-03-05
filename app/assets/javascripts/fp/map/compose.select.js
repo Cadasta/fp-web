@@ -57,6 +57,7 @@
     var tileProviders = settings.tileProviders,
         defaultProviderLabel = settings.defaultProvider,
         tileLayer,
+        utmGridLayer,
         map,
         pageComposer,
         zoomControls,
@@ -86,9 +87,14 @@
         atlasPaperSize = $('#atlas_paper_size'),
         atlasOrientation = $('#atlas_orientation'),
         atlasTitle = $('#atlas_title'),
-        atlasText = $('#atlas_text');
+        atlasText = $('#atlas_text'),
+        atlasUTMGrid = $('#atlas_utm_grid'),
+        atlasTitlePlaceHolder = $("#atlas-title-placeholder-text");
 
     if (intitle) atlasTitle.val(intitle);
+    if (atlasTitle.val() === "Untitled") atlasTitle.val("");
+    $('#atlas_title').attr("placeholder",atlasTitlePlaceHolder.text().trim());
+
     if (intext) atlasText.val(intext);
 
     // set tileLayer
@@ -134,6 +140,18 @@
 
     atlasProvider.on('change', function(){
       validateTileLayer(this.value);
+    });
+
+    atlasUTMGrid.on('change', function() {
+      var utmGridTemplate = 'http://tile.stamen.com/utm/{z}/{x}/{y}.png';
+      if (atlasUTMGrid.prop('checked')) {
+        if (!utmGridLayer) {
+          utmGridLayer = L.tileLayer(FP.map.utils.conformTemplate(utmGridTemplate), {})
+        }
+        map.addLayer(utmGridLayer);
+      } else {
+        map.removeLayer(utmGridLayer);
+      }
     });
 
     // sync up the fields

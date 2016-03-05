@@ -17,4 +17,4 @@ ADD . /app/
 ENV PATH /app/bin:$PATH
 VOLUME /app/app /app/config /app/db /app/lib /app/locale /app/public /app/test
 
-CMD rm -f tmp/pids/server.pid && rails server -b 0.0.0.0
+CMD rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0

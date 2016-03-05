@@ -3,7 +3,6 @@
 //= require mapbox
 //= require selectize
 
-
 @import "partials/base";
 @import "partials/nav";
 @import "partials/pagination";
@@ -15,4 +14,5 @@
 @import "partials/atlases.scss";
 @import "partials/snapshots.scss";
 @import "partials/helpers";
-
+@import "font-awesome-sprockets";
+@import "font-awesome";

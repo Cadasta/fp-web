@@ -18,6 +18,8 @@ MIX-INS
   display: -webkit-flex;
 }
 
+$menu-width: 180px;
+
 /**********
 GENERAL FOR COMPOSE
 ***********/
@@ -52,12 +54,12 @@ SIDE MENU
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
-  width: 160px;
+  z-index: 9999;
+  width: $menu-width;
   height: 100vh;
 
   margin: 0;
-  padding-right: 0;
+  padding: 0;
 
   border: 2px solid #eee;
   border-top: none;
@@ -67,20 +69,22 @@ SIDE MENU
   }
 
   label {
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin-bottom: 2px;
   }
 
   input[type=text] {
-    width: 90%;
-    height: 20px;
-    font-size: 1rem;
+    width: 97%;
+    height: 25px;
+    font-size: 1.2rem;
   }
 
   textarea {
-    width: 90%;
-    max-width: 90%;
-    margin: 0;
+    width: 97%;
+    max-width: 97%;
+    resize: vertical;
+    max-height:100px;
+    min-height:30px
   }
 
   input {
@@ -94,8 +98,9 @@ SIDE MENU
     width: 90%;
     padding: 0;
     margin: 0;
-    height: 20px;
-    font-size: 1rem;
+    height: 25px;
+    font-size: 1.1rem;
+    box-shadow: none;
   }
 
   /****************
@@ -104,7 +109,7 @@ SIDE MENU
   .tooltips-container {
     position: relative;
     display: inline-block;
-    margin-left: 2px;
+    margin-left: 0;
     font-size: 1rem;
 
     .tooltips {
@@ -140,194 +145,89 @@ SIDE MENU
         transition: opacity 0.3s;
         -webkit-transition: opacity 0.3s; /* Safari */
 
-        z-index: 999;
+        z-index: 8;
         pointer-events: none;
       }
     }
   }
 
   /****************
-  MENU LABELS AND ARROWS
+  MENU LABELS AND GROUP
   *****************/
+  h5 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-top: -5px;
+  }
 
   label {
       color: #444;
       font-weight: 400;
   }
 
-  .accordion-header {
-    $arrow-height: 10px solid $dark-grey;
-    $arrow-width: 5px solid transparent;
-    $arrow-height-after: 15px solid white;
-    $arrow-width-after: 10px solid transparent;
-
+  .menu-group-container{
+    overflow: hidden;
+    min-height: 0;
+    min-width: 0;
     width: 100%;
-    padding: 0 5px;
-    border-bottom: 2px solid $light-grey;
-    cursor: pointer;
 
-    h5 {
-      display: inline-block;
-      margin: 5px;
-      font-size: 1.5rem;
-    }
-
-    .box {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      float: right;
-
-        .down-arrow, .up-arrow {
-          position: relative;
-          width: 0;
-          height: 0;
-          margin: 0 auto;
-          margin-top: 10px;
-          border-right: $arrow-width;
-          border-left: $arrow-width;
-          transition: all .2s;
-          -webkit-transition: all .2s; /* Safari */
-        }
-
-        .down-arrow::after, .up-arrow::after {
-          position: absolute;
-          left: -10px;
-          border-right: $arrow-width-after;
-          border-left: $arrow-width-after;
-          content: "";
-          z-index: 1;
-        }
-
-        .down-arrow {
-          border-top: $arrow-height;
-        }
-
-        .up-arrow {
-          margin-top: 9px;
-          border-bottom: $arrow-height;
-        }
-
-        .down-arrow::after {
-          top: -18px;
-          border-top: $arrow-height-after;
-        }
-
-        .up-arrow::after {
-          bottom: -18px;
-          left: -10px;
-          border-bottom: $arrow-height-after;
-        }
-      }
-  }
-
-  /**************
-  ACCORDION
-  ***************/
-  .accordion {
-
-    a {
-      text-decoration: none;
-      color: $font-color;
-
-      &:hover {
-        color: $secondary-color;
-      }
-    }
-
-    .accordion-body {
+    .menu-group {
       padding: 10px;
-      padding-top: 0;
+      min-height: 0;
+      min-width: 0;
+      border-bottom: $light-grey 2px solid;
     }
-
-    .accordion-group {
-      height: 34px;
-      overflow: hidden;
-      transition: height .5s ease-out;
-      -webkit-transition: height .5s ease-out; /* Safari */
-
-      h5 {
-        position: relative;
-      }
-    }
-
-    .selected-group {
-      width: 100%;
-      // height: calc(100vh - 93px - 40px - 34px);
-      height: 242px;
-      border-bottom: 2px solid $light-grey;
-      overflow: hidden;
-
-      .accordion-header {
-        border: none;
-      }
-    }
-  }
-
-  /****************
-  SEARCH
-  *****************/
-
-  .atlas-search-field {
-    width: 100%;
-    background: rgba($light-grey, 0.1);
-    border: $light-grey solid 1px;
-    border-right: none;
-
-    .map-location-search-box {
-      background-image: image-url('search-24x24.png');
-      background-size: 15px;
-      background-repeat: no-repeat;
-      background-position: 2px 2px;
-      padding-left:22px;
-      width: 90%;
-      margin: 5%;
-      font-size: 1.2rem;
-    }
-
-    .map-location-search-button {
-      width: 32%;
-      padding: 0 10px;
-      text-align: center;
-    }
-
   }
 
   /**************
   NOTES + CHECKBOX
   ***************/
 
+  #atlas_title {
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  .notes-textarea {
+    width: 0;
+    height: 0;
+    margin-left: -900px;
+    opacity: 0;
+    transition: height 0.3s, opacity 0.3s;
+    -webkit-transition: height 0.3s, opacity 0.3s;
+    -moz-transition: height 0.3s, opacity 0.3s;
+    -o-transition: height 0.3s, opacity 0.3s;
+  }
+
+  .notes-textarea-visible {
+    width: 100%;
+    height: 70px;
+    margin-left: 0;
+    opacity: 1;
+    }
+
   .include-notes,
-  .private-map {
+  .private-map,
+  #map-lock-box,
+  .add-ons {
     width: 90%;
     color: #666;
+    display: inline;
 
     label {
       display: inline;
+      font-size: 1.2rem;
     }
   }
 
-  .include-notes {
-    margin-top: -5px;
-    margin-bottom: 15px;
-  }
-
-
-  /**************
-  BASEMAP OPTIONS
-  ***************/
-
-  .selectize-control {
-    width: 85%;
-
-    .item, .selectize-dropdown-content {
-      font-size: 1rem;
-    }
-
-    .selectize-dropdown-content {
-      height: 60px;
+  .include-notes,
+  .private-map {
+    line-height: 1.4;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    label {
+      font-size: 1.2rem;
     }
   }
 
@@ -338,15 +238,48 @@ SIDE MENU
   .page-sizing-and-orientation {
     @include display-flex();
     @include flexbox-cb(-flow, row);
-    @include flexbox-cb(-wrap, wrap);
-    width: 100%;
+    @include flexbox-cb(-wrap, nowrap);
+    width: 160px;
+    position: relative;
 
    .page-layout-group {
-      width: 86%;
+      width: 70px;
+    }
+
+    .orientation {
+      width: 85px;
+      margin-right: 0;
+      position: absolute;
+      bottom: 0;
+      left: 75px;
     }
   }
 
-  
+  /**************
+  BASEMAP OPTIONS
+  ***************/
+
+  .selectize-control {
+    width: 96%;
+
+    .selectize-input {
+      height: 25px;
+      font-size: 1.2rem;
+      box-shadow: none;
+      padding: 2px 8px;
+
+      input {
+        position: relative !important;
+      }
+    }
+    .selectize-dropdown {
+      height: 100px;
+
+      .selectize-dropdown-content {
+        max-height: 100px;
+      }
+    }
+  }
 
   /**************
   ADD-ONS
@@ -357,7 +290,8 @@ SIDE MENU
 
     label {
       display: inline;
-      line-height: 3rem;
+      line-height: 1.4;
+      margin-right: 2px;
     }
   }
 
@@ -367,15 +301,17 @@ SIDE MENU
 
   #final-step {
     position: absolute;
-    top: calc(242px + 34px + 34px + 50px);
-    width: 90%;
+    bottom: 20px;
+    margin-top: 10px;
+    width: 86%;
     height: 40px;
     margin-left: 10px;
+    margin-bottom: 5px;
     padding: 0;
     background-color: #444;
     border-color: 1px solid #d1d1d1;
 
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: $light-grey;
 
     &:hover {
@@ -385,12 +321,26 @@ SIDE MENU
 
   .cancel {
     position: absolute;
-    top: calc(242px + 34px + 34px + 50px + 50px);
+    bottom: 0;
+    float: right;
     width: 100%;
     height: 20px;
     padding-right: 10%;
     text-align: right;
     text-decoration: none;
+  }
+
+  @media screen and ( max-height: 567px ){
+    #final-step {
+      position: relative;
+      margin-top: 30px;
+    }
+
+    .cancel {
+      position: relative;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
   }
 } //end menu
 
@@ -398,11 +348,11 @@ SIDE MENU
 FULL-SCREEN MAP
 ***************/
 
-#map {
-  width: calc(100vw - 160px);
+#big-map {
+  width: calc(100vw - #{$menu-width});
   height: 100vh;
   margin: 0;
-  margin-left: 160px;
+  margin-left: $menu-width;
   padding: 0;
 
  .field-papers-logo {
@@ -410,7 +360,7 @@ FULL-SCREEN MAP
     top: 5px;
     right: 10px;
     width: 125px;
-    z-index: 1;
+    z-index: 2;
 
     img {
       width: 125px;
@@ -420,24 +370,93 @@ FULL-SCREEN MAP
   /**************
   ROW AND COL MODIFIERS
   ***************/
+  .leaflet-control-zoom {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    margin: 0px;
+    // top: 50px;
+  }
+
+  .leaflet-pelias-control {
+    position: absolute;
+    top: 80px;
+    left: 10px;
+    margin: 0px;
+  }
 
   .col-row-modifiers {
     width: 240px;
-    align-items: left;
+    align-items: right;
     margin-left: 5px;
     z-index: 999;
-    position: fixed;
-    bottom: 15px;
-    left: 320px;
+    position: absolute;
+    top: 10px;
+    left: 40px;
     display: inline-block;
 
+    .col-row-modifier-box-1 {
+      z-index: -1;
+      background-color: white;
+      position: absolute;
+      top: -5px;
+      left: -2px;
+      width: 208px;
+      height: 40px;
+      border: 1px solid black;
+      border-radius: 5px;
+      border-left: none;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+    .col-row-modifier-box-2 {
+      z-index: -1;
+      background-color: white;
+      position: absolute;
+      top: -5px;
+      left: -40px;
+      width: 38px;
+      height: 40px;
+      border: 1px solid black;
+      border-radius: 5px;
+      border-right: none;
+      border-bottom: none;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+    .col-row-modifier-box-3 {
+      z-index: -1;
+      background-color: white;
+      position: absolute;
+      top: 34px;
+      left: -40px;
+      width: 38px;
+      height: 26px;
+      border: 1px solid black;
+      border-radius: 5px;
+      border-top: none;
+      border-top-right-radius: 0px;
+      border-top-left-radius: 0px;
+    }
+
+    .col-row-modifiers-group-1 {
+      .grid-modifier-group {
+      }
+    }
+
+    .col-row-modifiers-group-2 {
+      margin-left: 5px;
+      .grid-modifier-group {
+      }
+    }
+
     .col-row-modifiers-group {
-      width: 110px;
       display: inline-block;
 
       .grid-modifier-group {
         height: 30px;
-        width: 110px;
+        width: 97px;
         font-size: 16px;
         font-weight: 600;
         display: inline-block;
@@ -462,37 +481,45 @@ FULL-SCREEN MAP
           text-align: center;
         }
 
+        i {
+          z-index: 999;
+          margin-right: 5px;
+
+        }
+
         .minus {
-          background-color: #eee;
+          width: 26px;
+          background-color: #fff;
           border-top-left-radius: 4px;
           border-bottom-left-radius: 4px;
           border-right: none;
 
-          &:active {
-            background-color: $light-grey;
+          &:hover {
+            background-color: $hover-color;
           }
         }
 
         .plus {
-          background-color: #eee;
+          width: 26px;
+          background-color: #fff;
           border-top-right-radius: 4px;
           border-bottom-right-radius: 4px;
-          border-left: none;
+          border-left: 1px solid rgba($dark-grey, 0.2);
 
-          &:active {
-            background-color: $light-grey;
+          &:hover {
+            background-color: $hover-color;
           }
         }
 
         .number {
+          width: 26px;
           text-align: center;
-          border-right: 1px solid rgba($dark-grey, 0.5);
-          border-left: 1px solid rgba($dark-grey, 0.5);
+          border-right: none;
+          border-left: 1px solid rgba($dark-grey, 0.2);
         }
       }
     }
   }
-
   /*********
   ROTATION RANGE
   **********/
@@ -501,6 +528,18 @@ FULL-SCREEN MAP
     position: fixed;
     bottom: 0;
     right: 20px;
+  }
+}
+
+/************
+SEARCH
+*************/
+
+.leaflet-pelias-search-icon {
+  width: 23px !important;
+
+  &:hover {
+    width: 23px !important;
   }
 }
 
@@ -516,40 +555,14 @@ LARGER THAN A TABLET
   #big-map-menu {
     width: 225px;
 
-    .accordion-header {
-
-      h5 {
-        font-size: 2rem;
-      }
-
-      .box {
-        margin-top: 5px;
-      }
-    }
-
-    /**************
-    LARGER ACCORDION
-    ***************/
-
-    .accordion {
-
-      .accordion-group {
-        height: 42px;
-      }
-
-      .selected-group {
-        // height: calc(100vh - 126px - 40px - 52px);
-        height: 300px;
-      }
-    }
-
     /***********
     LARGER GENERIC
     ************/
 
     label {
       font-size: 1.4rem;
-      margin-bottom: 2px;
+      margin-bottom: 0px;
+      margin-top: 5px;
     }
 
     input[type=text] {
@@ -557,19 +570,26 @@ LARGER THAN A TABLET
     }
 
     textarea {
-      margin-bottom: 10px;
+      margin-bottom: 0px;
+
     }
 
     input {
       &[type="checkbox"],
       &[type='text'] {
-        margin-bottom: 10px;
+        position: relative;
+        vertical-align: middle;
+        margin-bottom: 0px;
       }
     }
 
     select {
-      margin-bottom: 10px;
+      margin-bottom: 0px;
       height: 30px;
+    }
+
+    h5 {
+      font-size: 1.8rem;
     }
 
     .tooltips-container {
@@ -577,67 +597,93 @@ LARGER THAN A TABLET
     }
 
     /**************
-    LARGER SEARCH
-    ***************/
-
-    .atlas-search-field {
-      .map-location-search-box {
-        background-size: 20px;
-        background-position: 4px 4px;
-        padding-left:30px;
-        font-size: 1.5rem;
-      }
-    }
-
-    /**************
     LARGER PAGE ORIENTATION AND PAPER SIZE
     ***************/
 
     .page-sizing-and-orientation {
+      @include display-flex();
+      @include flexbox-cb(-flow, row);
+      @include flexbox-cb(-wrap, wrap);
+      width: 210px;
+
      .page-layout-group {
-        width: 92px;
+        width: 95px;
+      }
+
+      .orientation {
+        width: 110px;
+        margin-right: 0;
+        left: 95px;
       }
     }
 
     /**************
-    LARGER BASEMAP
+    BASEMAP OPTIONS
     ***************/
+
     .selectize-control {
-      width: 86%;
-
-      .item, .selectize-dropdown-content {
-        font-size: 1rem;
+      .selectize-input {
+        height: 30px;
+        padding: 1px 8px;
       }
 
-      .selectize-dropdown-content {
-        height: 100px;
+      .selectize-input.input-active {
+        padding-right: 30px;
       }
+      z-index: 999;
     }
 
     /**************
     LARGER ROW AND COL MODIFIERS
     ***************/
-    .col-row-modifiers-group {
-      margin-bottom: 10px;
+    .col-row-modifiers {
+      left: 550px;
+
+      .col-row-modifiers-group {
+        width: 100%;
+
+        .grid-modifier-group {
+          height: 20px;
+          width: 90%;
+          font-size: 13px;
+        }
+      }
     }
 
     /**************
     LARGER PRINT ATLAS BUTTON
     ***************/
     #final-step {
-      top: calc(300px + 42px + 42px + 70px);
+      bottom: 30px;
+      width: 87%;
+      margin-left: 10px;
       height: 50px;
+    }
 
-      font-size: 2rem;
+    @media screen and ( max-height: 690px ){
+      #final-step {
+        position: relative;
+        margin-top: 50px;
+      }
+
+      .cancel {
+        position: relative;
+        margin-top: -10px;
+        margin-bottom: 10px;
+      }
     }
 
     .cancel {
-      top: calc(300px + 42px + 42px + 50px + 80px);
+      height: 30px;
+    }
 
+    #final-step,
+    .cancel {
+      font-size: 1.7rem;
     }
   }
 
-  #map {
+  #big-map {
     margin-left: 225px;
     width: calc(100vw - 225px);
 
