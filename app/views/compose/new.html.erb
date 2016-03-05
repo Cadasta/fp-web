@@ -86,7 +86,12 @@
 
     <div class='col-row-modifiers'>
 
-        <div class="col-row-modifier-box-1"></div>
+        <div class="col-row-modifier-box-1">
+          <i class="fa fa-rotate-right fa-lg fa-rotate-270"></i> 
+          <form id='degrees'>
+            <input type="range" id="rangeInput" name="rangeInput" min="0" max="90" value='0'>
+          </form>
+        </div>
         <div class="col-row-modifier-box-2"></div>
         <div class="col-row-modifier-box-3"></div>
 
@@ -109,11 +114,10 @@
         </div> <!-- col-row-modifier-group -->
 
       </div> <!-- col-row-modifiers -->
+
   </div>
 
-  <form id='degrees'>
-    <input type="range" id="rangeInput" name="rangeInput" min="0" max="90" value='0'>
-  </form>
+  
 </div><!-- map -->
 
 <% content_for :foot do %>

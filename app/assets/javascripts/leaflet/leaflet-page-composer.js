@@ -81,10 +81,6 @@ L.PageComposer = L.Class.extend({
         return new L.LatLngBounds(sw, ne);
     },
 
-    _setGridRotation: function(deg){
-
-    },
-
     _updateGridRotation: function(deg){
       var width = this.dimensions.width;
       var height = this.dimensions.height;
@@ -124,6 +120,7 @@ L.PageComposer = L.Class.extend({
       var deg = document.getElementById('rangeInput').value;
       console.log(deg);
       this._updateGridRotation(deg);
+    },
 
     _getBoundsPinToCenter: function() {
       var size = this.map.getSize();
@@ -167,38 +164,6 @@ L.PageComposer = L.Class.extend({
       var leftRightWidth = Math.round((size.x-this.dimensions.width)/2);
       this.nwPosition = new L.Point(leftRightWidth, topBottomHeight);
       this.nwLocation = this.map.containerPointToLatLng(this.nwPosition);
-    },
-
-    _updateLocation: function(location){
-    //   var self = this;
-    //   var xhr = new XMLHttpRequest();
-    //   xhr.onreadystatechange = function(){
-    //     if (xhr.readyState === 4 && xhr.status === 200){
-    //       var latlngPoints = JSON.parse(xhr.responseText)[0].boundingbox;
-
-    //       self.map.fitBounds([
-    //         [latlngPoints[0],latlngPoints[2]],
-    //         [latlngPoints[1],latlngPoints[3]]
-    //       ]);
-
-      //     if (this.refs.locked){
-      //       //uncheck the "pin to nw corner" box
-      //       document.getElementById('map-lock-box').childNodes[1].checked = false;
-
-      //       this.refs.locked = false;
-      //       this._render();
-      //     }
-
-      //     this.refs.was_locked = false;
-      //     this.refs.lock_change = false;
-
-      //     this._updateToolDimensions();
-      //     this.fire("change");
-      //   }
-      // }
-
-    //   xhr.open("GET", "http://nominatim.openstreetmap.org/search/?format=json&limit=1&q="+location, true);
-    //   xhr.send(null);
     },
 
     _calculateInitialPositions: function() {

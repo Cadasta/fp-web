@@ -401,13 +401,28 @@ FULL-SCREEN MAP
       position: absolute;
       top: -5px;
       left: -2px;
-      width: 208px;
+      width: 373px;
       height: 40px;
       border: 1px solid black;
       border-radius: 5px;
       border-left: none;
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
+      /*********
+      ROTATION RANGE
+      **********/
+      #degrees {
+        z-index: 999;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
+
+      i {
+        position: absolute;
+        top: 15px;
+        right: 145px;
+      }
     }
     .col-row-modifier-box-2 {
       z-index: -1;
@@ -520,15 +535,6 @@ FULL-SCREEN MAP
       }
     }
   }
-  /*********
-  ROTATION RANGE
-  **********/
-  #degrees {
-    z-index: 999;
-    position: fixed;
-    bottom: 0;
-    right: 20px;
-  }
 }
 
 /************
@@ -542,7 +548,6 @@ SEARCH
     width: 23px !important;
   }
 }
-
 
 /*******************
 LARGER THAN A TABLET
